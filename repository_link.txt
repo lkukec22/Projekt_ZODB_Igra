@@ -1,0 +1,7 @@
+GitHub Repozitorij
+==================
+
+Link: https://github.com/vase_korisnicko_ime/zodb-rpg
+
+Instrukcije za kloniranje:
+git clone https://github.com/vase_korisnicko_ime/zodb-rpg.git
