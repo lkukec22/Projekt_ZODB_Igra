@@ -62,6 +62,10 @@ def run_game():
     player = db.root['players'][player_name]
     clock = pygame.time.Clock()
 
+    # Primjer upita: ispiši sve aktivne igrače na početku (ZODB Query)
+    aktivni = db.get_all_active_players()
+    print(f"Aktivni igrači u bazi: {[p.name for p in aktivni]}")
+
     enemies = []
     bullets = []
     spawn_timer = 0
