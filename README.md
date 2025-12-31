@@ -29,8 +29,9 @@ Pokrenite igru naredbom:
 ```bash
 python src/main.py
 ```
-- **Tipke A / D**: Kretanje igrača lijevo i desno.
-- **Tipka SPACE**: Simulacija primanja štete (Damage).
+- **Tipke W / A / S / D**: Slobodno kretanje igrača (2D).
+- **Lijevi klik miša**: Pucanje na neprijatelje.
+- **Tipka R**: Restart igre nakon poraza.
 - **Tipka X / Zatvori prozor**: Automatsko spremanje napretka i izlaz.
 
 ## 🧹 Resetiranje stanja
