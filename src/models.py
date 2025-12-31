@@ -2,9 +2,12 @@ from persistent import Persistent
 from persistent.list import PersistentList
 
 class Item(Persistent):
-    def __init__(self, name, power):
+    def __init__(self, name, item_type, value):
         self.name = name
-        self.power = power
+        self.item_type = item_type # 'heal' ili 'score'
+        self.value = value
+        self.x = 0
+        self.y = 0
 
 class Player(Persistent):
     def __init__(self, name):
@@ -29,7 +32,18 @@ class Player(Persistent):
         self.x = 400
         self.y = 300
         self.score = 0
+        self.inventory = PersistentList()
         self.status = "Aktivan"
+        self._p_changed = True
+
+    # --- POHRANJENA PROCEDURA: Korištenje predmeta iz inventara ---
+    def use_item(self, item):
+        if item.item_type == 'heal':
+            self.hp += item.value
+        elif item.item_type == 'score':
+            self.add_score(item.value)
+        
+        # Maknuli smo self.inventory.remove(item) kako bi ostao u bazi
         self._p_changed = True
 
     # --- POHRANJENA PROCEDURA (Logika unutar objekta) ---
@@ -47,7 +61,7 @@ class Player(Persistent):
 
     @hp.setter
     def hp(self, value):
-        self._hp = max(0, value)
+        self._hp = min(100, max(0, value))
         # OKIDAČ: Ako je HP 0, promijeni status u "Poražen"
         if self._hp == 0:
             self.status = "Poražen"

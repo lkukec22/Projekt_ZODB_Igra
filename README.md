@@ -2,11 +2,12 @@
 
 Jednostavna RPG igra razvijena sa **ZODB (Zope Object Database)** objektnom bazom podataka i **PyGame** frameworkom.
 
-## 🚀 Značajke
-- **ZODB Perzistencija**: Automatsko spremanje stanja igrača (HP, pozicija, inventar).
-- **Triggeri**: Automatska promjena statusa igrača u "Poražen" kada HP padne na 0 (implementirano putem Python property-ja).
-- **Pohranjene procedure**: Logika igre (npr. `take_damage`, `move`) smještena unutar samih objekata.
-- **Upiti (Queries)**: Dohvaćanje specifičnih podataka iz baze (npr. svi aktivni igrači).
+## 🚀 Značajke (ZODB Fokus)
+- **Transparentna Perzistencija**: Automatsko spremanje cijelog grafa objekata (Igrač -> Inventar -> Predmeti).
+- **BTrees (OOBTree)**: Korištenje B-stabala za efikasno pohranjivanje i dohvaćanje High Score tablice.
+- **Triggeri (Okidači)**: Automatska promjena stanja objekta (npr. HP -> Status) putem Python property-ja.
+- **Pohranjene procedure**: Kompleksna logika igre (npr. `use_item`, `take_damage`) smještena unutar samih perzistentnih klasa.
+- **Upiti (Queries)**: Napredni upiti nad BTree strukturama za dohvaćanje top rezultata.
 
 ## 🛠️ Instalacija
 

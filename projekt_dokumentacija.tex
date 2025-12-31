@@ -343,17 +343,18 @@ player.status = "Aktivan"
 transaction.commit()  # Sve se sprema atomski
 \end{lstlisting}
 
-\subsubsection{PersistentMapping i PersistentList}
+\subsubsection{PersistentMapping, PersistentList i BTrees}
 
 Za spravljanje kolekcija u ZODB-u koristi se \texttt{PersistentMapping} i 
-\texttt{PersistentList} umjesto običnih Python rječnika i listi:
+\texttt{PersistentList} umjesto običnih Python rječnika i listi. Za veće 
+kolekcije podataka koje zahtijevaju efikasno pretraživanje i sortiranje, 
+ZODB koristi \texttt{BTrees} (npr. \texttt{OOBTree}).
 
-\begin{lstlisting}[caption={PersistentMapping u ZODB-u},label={lst:mapping}]
-from persistent.mapping import PersistentMapping
+\begin{lstlisting}[caption={OOBTree u ZODB-u},label={lst:btree}]
+from BTrees.OOBTree import OOBTree
 
-root['players'] = PersistentMapping()
-root['players']['player1'] = player_obj
-# ZODB automatski detektuje promjene
+root['high_scores'] = OOBTree()
+# Podaci su automatski sortirani po kljucu
 \end{lstlisting}
 
 \subsection{PyGame Framework}
@@ -435,6 +436,7 @@ Struktura podataka u igri je:
 │      GameDB (root)          │
 ├─────────────────────────────┤
 │ + players: PersistentMap    │
+│ + high_scores: OOBTree      │
 │ + world_state: PersistentMap│
 └──────────────┬──────────────┘
                │
@@ -447,7 +449,7 @@ Struktura podataka u igri je:
    │ name    │   │ last_login   │
    │ _hp     │   │              │
    │ x, y    │   └──────────────┘
-   │ status  │
+   │ score   │
    │inventory│───────────┐
    └─────────┘           │
                          ▼
@@ -455,7 +457,8 @@ Struktura podataka u igri je:
                     │  Item   │
                     ├─────────┤
                     │ name    │
-                    │ power   │
+                    │ type    │
+                    │ value   │
                     └─────────┘
     \end{verbatim}
     \caption{UML dijagram baze podataka}
@@ -542,6 +545,8 @@ class GameDB:
         
         if 'players' not in self.root:
             self.root['players'] = PersistentMapping()
+        if 'high_scores' not in self.root:
+            self.root['high_scores'] = OOBTree()
         if 'world_state' not in self.root:
             self.root['world_state'] = PersistentMapping({'last_login': None})
 \end{lstlisting}

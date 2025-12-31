@@ -2,7 +2,7 @@ import pygame
 import random
 import math
 from database import GameDB
-from models import Player
+from models import Player, Item
 
 class Bullet:
     def __init__(self, x, y, target_x, target_y):
@@ -22,21 +22,11 @@ class Bullet:
 
 class Enemy:
     def __init__(self):
-        # Spawn izvan ekrana
         side = random.randint(0, 3)
-        if side == 0: # Top
-            self.x = random.randint(0, 800)
-            self.y = -50
-        elif side == 1: # Bottom
-            self.x = random.randint(0, 800)
-            self.y = 650
-        elif side == 2: # Left
-            self.x = -50
-            self.y = random.randint(0, 600)
-        else: # Right
-            self.x = 850
-            self.y = random.randint(0, 600)
-        
+        if side == 0: self.x, self.y = random.randint(0, 800), -50
+        elif side == 1: self.x, self.y = random.randint(0, 800), 650
+        elif side == 2: self.x, self.y = -50, random.randint(0, 600)
+        else: self.x, self.y = 850, random.randint(0, 600)
         self.speed = random.uniform(1, 2.5)
 
     def move_towards_player(self, player_x, player_y):
@@ -50,10 +40,9 @@ class Enemy:
 def run_game():
     pygame.init()
     screen = pygame.display.set_mode((800, 600))
-    pygame.display.set_caption("ZODB RPG Projekt - Survival")
+    pygame.display.set_caption("ZODB RPG Projekt - Advanced Persistence")
     
     db = GameDB()
-    # Dohvati ili kreiraj igrača
     player_name = "Igrac1"
     if player_name not in db.root['players']:
         db.root['players'][player_name] = Player(player_name)
@@ -62,12 +51,13 @@ def run_game():
     player = db.root['players'][player_name]
     clock = pygame.time.Clock()
 
-    # Primjer upita: ispiši sve aktivne igrače na početku (ZODB Query)
-    aktivni = db.get_all_active_players()
-    print(f"Aktivni igrači u bazi: {[p.name for p in aktivni]}")
+    # ZODB Query: Top Scores
+    top_scores = db.get_top_scores()
+    print(f"Top rezultati iz baze: {top_scores}")
 
     enemies = []
     bullets = []
+    dropped_items = [] # Lista Item objekata (Persistent)
     spawn_timer = 0
 
     running = True
@@ -85,41 +75,43 @@ def run_game():
                     running = False
                 if event.key == pygame.K_r and player.status == "Poražen":
                     player.reset()
-                    enemies = []
-                    bullets = []
+                    enemies, bullets, dropped_items = [], [], []
             
             if event.type == pygame.MOUSEBUTTONDOWN and player.status == "Aktivan":
                 mx, my = pygame.mouse.get_pos()
                 bullets.append(Bullet(player.x + 20, player.y + 20, mx, my))
 
         if player.status == "Aktivan":
-            # Kretanje (WASD)
             keys = pygame.key.get_pressed()
             dx, dy = 0, 0
             if keys[pygame.K_a]: dx = -5
             if keys[pygame.K_d]: dx = 5
             if keys[pygame.K_w]: dy = -5
             if keys[pygame.K_s]: dy = 5
-            if dx != 0 or dy != 0:
-                player.move(dx, dy)
+            if dx != 0 or dy != 0: player.move(dx, dy)
 
-            # Spawning neprijatelja
             spawn_timer += 1
-            if spawn_timer > 60: # Svake sekunde
+            if spawn_timer > 60:
                 enemies.append(Enemy())
                 spawn_timer = 0
 
-            # Update metaka
+            # Update metaka i sudari
             for b in bullets[:]:
                 b.move()
                 if b.x < 0 or b.x > 800 or b.y < 0 or b.y > 600:
                     bullets.remove(b)
                     continue
                 
-                # Collision s neprijateljima
                 for e in enemies[:]:
-                    dist = math.hypot(b.x - e.x, b.y - e.y)
-                    if dist < 20:
+                    if math.hypot(b.x - e.x, b.y - e.y) < 20:
+                        # Nasumični drop predmeta (ZODB Reference)
+                        if random.random() < 0.3:
+                            item_type = random.choice(['heal', 'score'])
+                            val = 20 if item_type == 'heal' else 50
+                            new_item = Item(f"Drop_{item_type}", item_type, val)
+                            new_item.x, new_item.y = e.x, e.y
+                            dropped_items.append(new_item)
+                        
                         if e in enemies: enemies.remove(e)
                         if b in bullets: bullets.remove(b)
                         player.add_score(10)
@@ -128,42 +120,43 @@ def run_game():
             # Update neprijatelja
             for e in enemies[:]:
                 e.move_towards_player(player.x + 20, player.y + 20)
-                
-                # Collision s igračem
-                dist = math.hypot(e.x - (player.x + 20), e.y - (player.y + 20))
-                if dist < 30:
+                if math.hypot(e.x - (player.x + 20), e.y - (player.y + 20)) < 30:
                     player.take_damage(10)
                     enemies.remove(e)
+                    if player.status == "Poražen":
+                        db.add_high_score(player.name, player.score)
 
-        # Crtanje metaka
-        for b in bullets:
-            b.draw(screen)
+            # Skupljanje predmeta (ZODB Object Graph)
+            for it in dropped_items[:]:
+                if math.hypot(it.x - (player.x + 20), it.y - (player.y + 20)) < 30:
+                    player.inventory.append(it) # Dodajemo Persistent objekt u PersistentList
+                    player.use_item(it) # Odmah iskoristi (Stored Procedure)
+                    dropped_items.remove(it)
 
-        # Crtanje neprijatelja
-        for e in enemies:
-            e.draw(screen)
+        # Crtanje
+        for b in bullets: b.draw(screen)
+        for e in enemies: e.draw(screen)
+        for it in dropped_items:
+            color = (0, 255, 255) if it.item_type == 'heal' else (255, 255, 0)
+            pygame.draw.rect(screen, color, (it.x, it.y, 15, 15))
 
-        # Nacrtaj igrača
         color = (0, 255, 0) if player.status == "Aktivan" else (100, 100, 100)
         pygame.draw.rect(screen, color, (player.x, player.y, 40, 40))
         
         # UI
-        font = pygame.font.SysFont(None, 36)
-        ui_text = f"HP: {player.hp} | Score: {player.score} | Status: {player.status}"
-        img = font.render(ui_text, True, (255, 255, 255))
-        screen.blit(img, (20, 20))
+        font = pygame.font.SysFont(None, 32)
+        ui_text = f"HP: {player.hp} | Score: {player.score} | Inv: {len(player.inventory)}"
+        screen.blit(font.render(ui_text, True, (255, 255, 255)), (20, 20))
 
         if player.status == "Poražen":
-            over_font = pygame.font.SysFont(None, 72)
-            over_img = over_font.render("GAME OVER", True, (255, 0, 0))
-            screen.blit(over_img, (250, 250))
-            retry_img = font.render("Pritisni R za Restart", True, (200, 200, 200))
-            screen.blit(retry_img, (280, 320))
-
-        # Upute
-        small_font = pygame.font.SysFont(None, 24)
-        instr = small_font.render("WASD = Kretanje | MOUSE = Pucanje | X = Spremi i izađi", True, (200, 200, 200))
-        screen.blit(instr, (20, 560))
+            screen.blit(pygame.font.SysFont(None, 72).render("GAME OVER", True, (255, 0, 0)), (250, 200))
+            # Prikaz top score-a iz baze
+            y_off = 280
+            screen.blit(font.render("Top Scores (iz ZODB BTree):", True, (255, 255, 255)), (280, y_off))
+            for name, score in db.get_top_scores(3):
+                y_off += 30
+                screen.blit(font.render(f"{name}: {score}", True, (200, 200, 200)), (300, y_off))
+            screen.blit(font.render("Pritisni R za Restart", True, (200, 200, 200)), (280, y_off + 50))
 
         pygame.display.flip()
         clock.tick(60)
