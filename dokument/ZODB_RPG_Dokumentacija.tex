@@ -1,0 +1,222 @@
+\documentclass[]{foi} 
+
+\usepackage[utf8]{inputenc}
+\usepackage{lipsum}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+
+% KOD STYLING
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\footnotesize,
+    commentstyle=\itshape\color{gray},
+    keywordstyle=\color{blue}\bfseries,
+    stringstyle=\color{red},
+    showstringspaces=false,
+    breaklines=true,
+    prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    backgroundcolor=\color{white},
+    frame=single,
+    rulecolor=\color{black},
+    captionpos=b
+}
+
+\vrstaRada{\projekt}
+
+\title{RPG Igra sa ZODB i PyGame}
+\predmet{Baze Podataka}
+
+\author{Student Studentić} 
+\spolStudenta{\musko} 
+
+\mentor{Dr. sci. Imetor Prezimento}
+\spolMentora{\musko} 
+\titulaProfesora{prof.~dr.~sc.}
+
+\godina{2026}
+\mjesec{siječanj}
+
+\indeks{12345678}
+
+\smjer{Informacijski i poslovni sustavi}
+
+
+\sazetak{Ovaj projekt prikazuje razvoj RPG igre korištenjem objektno-orijentirane baze podataka ZODB i PyGame frameworka za grafiku. Aplikacija demonstrira perzistenciju kompleksnih Pythonovih objekata, upravljanje stanjem igrača, te integraciju baze podataka s grafičkim sučeljem. Igra uključuje sisteme za: kretanje igrača, sustav zdravlja, inventar stavki, te trajno pohranjevanje podataka igrača u ZODB-u. Sve operacije koriste ACID transakcije kako bi se osigurala konzistencija podataka.}
+
+\kljucneRijeci{ZODB; objektne baze podataka; PyGame; RPG; Python; perzistencija; transakcije; okidači}
+
+\acrodef{ZODB}{Zope Object Database}
+\acrodef{RPG}{Role-Playing Game}
+\acrodef{OOBP}{Objektno-orijentirana baza podataka}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\makeatletter \def\@dotsep{4.5} \makeatother
+\pagestyle{plain}
+
+\chapter{Uvod}
+
+Ovaj projekt je izrađen kao dio kolegija Baze podataka. Demonstrira prednosti objektnih baza podataka u razvoju igara, fokusirajući se na ACID svojstva, transakcije i transparentnu perzistenciju objekata.
+
+Projekt je \ac{RPG} igra razvijena u 2D sa osnovnim mehanikama. Igrač kontrolira likove koji se mogu kretati, primati štetu, i skupljati predmete iz svojega inventara. Igra je dizajnirana kako bi demonstrirala kako \ac{ZODB} efektivno pohrani kompleksne objekte karakteristične za igre.
+
+Igra posjeduje sljedeće mehanike:
+\begin{enumerate}
+    \item \textbf{Kretanje} -- Igrač se kreće tipkama A (lijevo) i D (desno)
+    \item \textbf{Sistem Zdravlja} -- Igrač ima 100 HP, pri svakom šteti se smanjuje
+    \item \textbf{Okidač za Porazu} -- Kada HP padne na 0, igrač se automatski proglašava poraženim
+    \item \textbf{Inventar} -- Igrač može prikupljati stavke
+    \item \textbf{Perzistencija} -- Svi podaci se trajna sprema u \ac{ZODB}
+\end{enumerate}
+
+Za ovu aplikaciju, \ac{ZODB} je odličan izbor jer omogućava da se kompleksni Python objekti (kao što je igrač s inventarom) pohranjuju direktno bez potrebe za mapiranjem na SQL tablice. Primjerice, igrač ima \texttt{PersistentList} za inventar koji sadrži \texttt{Item} objekte. Objekti se automatski prate u \ac{ZODB}-u nakon naslijeđivanja \texttt{Persistent} klase.
+
+\chapter{Teorijski okvir}
+
+\section{Objektno-Orijentirane Baze Podataka}
+
+Objektno-orijentirana baza podataka (\ac{OOBP}) je sustav koji pohrani objekte direktno kao entitete baze podataka, bez potrebe za prevodom u relacijski format. Za razliku od relacijskih baza koje koriste tablice i SQL, \ac{OOBP} čuva Python objekte kako su kreirani \cite{OOBP2015}.
+
+Osnovna svojstva usporedbe ZODB-a i relacijskih baza podataka prikazana su u tablici \ref{tab:comparison}.
+
+\begin{table}[h!]
+    \centering
+    \caption{Usporedba ZODB i Relacijskih BD}
+    \label{tab:comparison}
+    \begin{tabular}{|l|l|l|}
+    \hline
+    \textbf{Kriterij} & \textbf{ZODB} & \textbf{PostgreSQL} \\
+    \hline
+    Osnovni entitet & Python objekt & Tablica/Redak \\
+    \hline
+    Upiti & Python kod & SQL \\
+    \hline
+    Relacije & Direktne reference & Strani ključevi \\
+    \hline
+    Kompleksnost & Jednostavna & Kompleksna za objekte \\
+    \hline
+    Tipski sustav & Python tipovi & SQL tipovi \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\section{ACID Svojstva}
+
+ACID predstavlja četiri svojstva koja osiguravaju pouzdanost transakcija u bazama podataka \cite{ACID2020}:
+\begin{itemize}
+    \item \textbf{Atomarnost (Atomicity)}: Transakcija se ili kompletan izvršava ili se uopće ne izvršava.
+    \item \textbf{Konzistentnost (Consistency)}: Baza je uvijek u konzistentnom stanju.
+    \item \textbf{Izolacija (Isolation)}: Konkurentne transakcije ne vide međusobne promjene dok se ne commitaju.
+    \item \textbf{Trajnost (Durability)}: Kada je transakcija commitana, sprema se trajno.
+\end{itemize}
+
+\section{ZODB Specifičnosti}
+
+Objekti koji se mogu pohraniti trebaju naslijediti klasu \texttt{Persistent}. Transakcije se koriste za grupiranje više operacija. Za spravljanje kolekcija u \ac{ZODB}-u koristi se \texttt{PersistentMapping} i \texttt{PersistentList} umjesto običnih Python rječnika i listi \cite{ZODB}.
+
+\chapter{Model Baze Podataka}
+
+Struktura podataka u igri sastoji se od glavnog korijenskog objekta (root) koji sadrži mape za igrače, tablicu najboljih rezultata i stanje svijeta.
+
+\section{Klase i Svojstva}
+
+\subsection{Player Klasa}
+
+Igrač je glavni lik kojega kontrolira korisnik.
+
+\begin{lstlisting}[caption={Definicija Player klase},label={lst:player_class}]
+class Player(Persistent):
+    def __init__(self, name):
+        self.name = name
+        self._hp = 100
+        self.x = 400
+        self.y = 300
+        self.inventory = PersistentList()
+        self.status = "Aktivan"
+\end{lstlisting}
+
+\subsection{Item Klasa}
+
+Stavka je predmet koji igrač može nositi u inventaru.
+
+\begin{lstlisting}[caption={Definicija Item klase},label={lst:item_class}]
+class Item(Persistent):
+    def __init__(self, name, power):
+        self.name = name
+        self.power = power
+\end{lstlisting}
+
+\chapter{Implementacija}
+
+\section{Struktura Projekta}
+
+Projekt se sastoji od sljedećih datoteka:
+\begin{itemize}
+    \item \texttt{src/main.py}: Glavna petlja igre i PyGame logika.
+    \item \texttt{src/models.py}: Definicije perzistentnih objekata (\texttt{Player}, \texttt{Item}).
+    \item \texttt{src/database.py}: Upravljanje \ac{ZODB} vezom i inicijalizacija baze.
+    \item \texttt{data/}: Mapa u kojoj se pohranjuju datoteke baze podataka.
+\end{itemize}
+
+\section{Inicijalizacija ZODB-a}
+
+Baza podataka se inicijalizira kreiranjem \texttt{FileStorage} i \texttt{DB} objekata, te otvaranjem konekcije \cite{ZODB}.
+
+\begin{lstlisting}[caption={Inicijalizacija baze u database.py},label={lst:db_init}]
+class GameDB:
+    def __init__(self, db_path='data/game.fs'):
+        os.makedirs(os.path.dirname(db_path), exist_ok=True)
+        self.storage = ZODB.FileStorage.FileStorage(db_path)
+        self.db = ZODB.DB(self.storage)
+        self.connection = self.db.open()
+        self.root = self.connection.root()
+        
+        if 'players' not in self.root:
+            self.root['players'] = PersistentMapping()
+\end{lstlisting}
+
+\section{Okidači (Triggers)}
+
+Okidač za ``HP = 0'' je implementiran kao property setter. Kada se HP promijeni, provjerava se je li pao na 0. Ako jest, status igrača se automatski mijenja.
+
+\begin{lstlisting}[caption={Okidač - property setter za HP},label={lst:trigger}]
+@property
+def hp(self):
+    return self._hp
+
+@hp.setter
+def hp(self, value):
+    self._hp = max(0, value)
+    if self._hp == 0:
+        self.status = "Poražen"  # Automatska promjena
+    self._p_changed = True  # Javi ZODB-u
+\end{lstlisting}
+
+\chapter{Primjeri Korištenja}
+
+\section{Pokretanje i Igranje}
+
+Igra se pokreće naredbom \texttt{python src/main.py}. Igrač se kreće tipkama A i D. Pozicija igrača se ažurira na ekranu u realnom vremenu \cite{Pygame}.
+
+\section{Spremanje Stanja}
+
+Svaki put kada se igra zatvori, poziva se \texttt{transaction.commit()}, čime se svi podaci trajno spremaju u \texttt{data/game.fs}. Pri sljedećem pokretanju, podaci se učitavaju točno onako kako su ostavljeni.
+
+\chapter{Zaključak}
+
+\ac{ZODB} se pokazao odličnim izborom za ovu aplikaciju zbog jednostavnosti direktnog spremanja Python objekata bez mapiranja i fleksibilnosti koju pruža. Property setter-i omogućavaju implementaciju logike okidača na prirodan način. 
+
+Projekat je uspješno demonstrirao kako \ac{ZODB} pohranjuje kompleksne Python objekte, korištenje transakcija za atomske operacije, te integraciju baze s grafičkim sučeljem.
+
+\makebackmatter
+
+\end{document}

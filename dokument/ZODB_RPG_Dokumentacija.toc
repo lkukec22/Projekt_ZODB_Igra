@@ -1,0 +1,20 @@
+\babel@toc {croatian}{}\relax 
+\contentsline {chapter}{\numberline {1}Uvod}{1}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Teorijski okvir}{2}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Objektno-Orijentirane Baze Podataka}{2}{section.2.1}%
+\contentsline {section}{\numberline {2.2}ACID Svojstva}{2}{section.2.2}%
+\contentsline {section}{\numberline {2.3}ZODB Specifičnosti}{2}{section.2.3}%
+\contentsline {chapter}{\numberline {3}Model Baze Podataka}{3}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Klase i Svojstva}{3}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Player Klasa}{3}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Item Klasa}{3}{subsection.3.1.2}%
+\contentsline {chapter}{\numberline {4}Implementacija}{4}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Struktura Projekta}{4}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Inicijalizacija ZODB-a}{4}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Okidači (Triggers)}{4}{section.4.3}%
+\contentsline {chapter}{\numberline {5}Primjeri Korištenja}{5}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Pokretanje i Igranje}{5}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Spremanje Stanja}{5}{section.5.2}%
+\contentsline {chapter}{\numberline {6}Zaključak}{6}{chapter.6}%
+\contentsline {chapter}{Popis literature}{7}{chapter*.6}%
+\contentsline {chapter}{Popis tablica}{8}{chapter*.7}%
