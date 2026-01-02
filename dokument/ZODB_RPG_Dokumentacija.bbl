@@ -81,56 +81,6 @@
       \field{pages}{287\bibrangedash 317}
       \range{pages}{31}
     \endentry
-    \entry{ZODB}{online}{}
-      \name{author}{1}{}{%
-        {{hash=37e98b258177a5d8e4d9aa859cdc254c}{%
-           family={{Zope Foundation}},
-           familyi={Z\bibinitperiod}}}%
-      }
-      \strng{namehash}{37e98b258177a5d8e4d9aa859cdc254c}
-      \strng{fullhash}{37e98b258177a5d8e4d9aa859cdc254c}
-      \strng{bibnamehash}{37e98b258177a5d8e4d9aa859cdc254c}
-      \strng{authorbibnamehash}{37e98b258177a5d8e4d9aa859cdc254c}
-      \strng{authornamehash}{37e98b258177a5d8e4d9aa859cdc254c}
-      \strng{authorfullhash}{37e98b258177a5d8e4d9aa859cdc254c}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{title}{ZODB Documentation}
-      \field{year}{2024}
-      \verb{urlraw}
-      \verb https://zodb.org
-      \endverb
-      \verb{url}
-      \verb https://zodb.org
-      \endverb
-    \endentry
-    \entry{Pygame}{online}{}
-      \name{author}{1}{}{%
-        {{hash=8681a296bd56984258bbe73ef4c0b251}{%
-           family={{Pygame Foundation}},
-           familyi={P\bibinitperiod}}}%
-      }
-      \strng{namehash}{8681a296bd56984258bbe73ef4c0b251}
-      \strng{fullhash}{8681a296bd56984258bbe73ef4c0b251}
-      \strng{bibnamehash}{8681a296bd56984258bbe73ef4c0b251}
-      \strng{authorbibnamehash}{8681a296bd56984258bbe73ef4c0b251}
-      \strng{authornamehash}{8681a296bd56984258bbe73ef4c0b251}
-      \strng{authorfullhash}{8681a296bd56984258bbe73ef4c0b251}
-      \field{sortinit}{5}
-      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{title}{Pygame - Getting Started}
-      \field{year}{2024}
-      \verb{urlraw}
-      \verb https://pygame.org/docs
-      \endverb
-      \verb{url}
-      \verb https://pygame.org/docs
-      \endverb
-    \endentry
   \enddatalist
 \endrefsection
 \endinput

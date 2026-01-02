@@ -9,89 +9,88 @@
 \newacro{ZODB}[ZODB]{Zope Object Database}
 \newacro{RPG}[RPG]{Role-Playing Game}
 \newacro{OOBP}[OOBP]{Objektno-orijentirana baza podataka}
+\newacro{ACID}[ACID]{Atomicity, Consistency, Isolation, Durability}
 \babel@aux{croatian}{}
 \@writefile{toc}{\contentsline {chapter}{\numberline {1}Uvod}{1}{chapter.1}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
 \@writefile{lol}{\addvspace {10\p@ }}
+\@writefile{toc}{\contentsline {section}{\numberline {1.1}Opis Aplikacijske Domene}{1}{section.1.1}\protected@file@percent }
 \AC@undonewlabel{acro:RPG}
-\newlabel{acro:RPG}{{1}{1}{Uvod}{section*.2}{}}
+\newlabel{acro:RPG}{{1.1}{1}{Opis Aplikacijske Domene}{section*.2}{}}
 \acronymused{RPG}
+\acronymused{RPG}
+\@writefile{toc}{\contentsline {section}{\numberline {1.2}Motivacija i Cilj}{1}{section.1.2}\protected@file@percent }
 \AC@undonewlabel{acro:ZODB}
-\newlabel{acro:ZODB}{{1}{1}{Uvod}{section*.3}{}}
-\acronymused{ZODB}
-\acronymused{ZODB}
-\acronymused{ZODB}
+\newlabel{acro:ZODB}{{1.2}{1}{Motivacija i Cilj}{section*.3}{}}
 \acronymused{ZODB}
 \abx@aux@cite{0}{OOBP2015}
 \abx@aux@segm{0}{0}{OOBP2015}
 \abx@aux@cite{0}{ACID2020}
 \abx@aux@segm{0}{0}{ACID2020}
-\abx@aux@cite{0}{ZODB}
-\abx@aux@segm{0}{0}{ZODB}
 \@writefile{toc}{\contentsline {chapter}{\numberline {2}Teorijski okvir}{2}{chapter.2}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
 \@writefile{lol}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {2.1}Objektno-Orijentirane Baze Podataka}{2}{section.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.1}Objektno-Orijentirane Baze Podataka (OOBP)}{2}{section.2.1}\protected@file@percent }
 \AC@undonewlabel{acro:OOBP}
-\newlabel{acro:OOBP}{{2.1}{2}{Objektno-Orijentirane Baze Podataka}{section*.4}{}}
+\newlabel{acro:OOBP}{{2.1}{2}{Objektno-Orijentirane Baze Podataka (OOBP)}{section*.4}{}}
 \acronymused{OOBP}
-\acronymused{OOBP}
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Usporedba ZODB i Relacijskih BD}}{2}{table.caption.5}\protected@file@percent }
-\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{tab:comparison}{{1}{2}{Usporedba ZODB i Relacijskih BD}{table.caption.5}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {2.2}ACID Svojstva}{2}{section.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2.3}ZODB Specifičnosti}{2}{section.2.3}\protected@file@percent }
 \acronymused{ZODB}
+\@writefile{toc}{\contentsline {section}{\numberline {2.2}Usporedba s Relacijskim Pristupom}{2}{section.2.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Usporedba ZODB i Relacijskih baza}}{2}{table.caption.5}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{tab:comparison}{{1}{2}{Usporedba ZODB i Relacijskih baza}{table.caption.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.3}ACID Svojstva i Transakcije}{2}{section.2.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {chapter}{\numberline {3}Model Baze Podataka}{3}{chapter.3}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
 \@writefile{lol}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {3.1}Klase i Svojstva}{3}{section.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1.1}Player Klasa}{3}{subsection.3.1.1}\protected@file@percent }
-\newlabel{lst:player_class}{{1}{3}{Definicija Player klase}{lstlisting.1}{}}
-\@writefile{lol}{\contentsline {lstlisting}{\numberline {1}{\ignorespaces Definicija Player klase}}{3}{lstlisting.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1.2}Item Klasa}{3}{subsection.3.1.2}\protected@file@percent }
-\newlabel{lst:item_class}{{2}{3}{Definicija Item klase}{lstlisting.2}{}}
-\@writefile{lol}{\contentsline {lstlisting}{\numberline {2}{\ignorespaces Definicija Item klase}}{3}{lstlisting.2}\protected@file@percent }
-\abx@aux@cite{0}{ZODB}
-\abx@aux@segm{0}{0}{ZODB}
-\@writefile{toc}{\contentsline {chapter}{\numberline {4}Implementacija}{4}{chapter.4}\protected@file@percent }
+\acronymused{ZODB}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces UML Model podataka s prikazom ZODB hijerarhije}}{3}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:uml_diagram}{{1}{3}{UML Model podataka s prikazom ZODB hijerarhije}{figure.caption.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.1}Struktura Korijenskog Objekta}{3}{section.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.2}Klase Podataka}{3}{section.3.2}\protected@file@percent }
+\gdef \LT@i {\LT@entry 
+    {4}{71.92992pt}\LT@entry 
+    {4}{77.57349pt}\LT@entry 
+    {4}{154.21118pt}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.1}Klasa Player}{4}{subsection.3.2.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Atributi klase Player}}{4}{table.3.2}\protected@file@percent }
+\newlabel{tab:player_attr}{{2}{4}{Atributi klase Player}{table.3.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.2}Klasa Item}{4}{subsection.3.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {4}Implementacija}{5}{chapter.4}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
 \@writefile{lol}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {4.1}Struktura Projekta}{4}{section.4.1}\protected@file@percent }
-\acronymused{ZODB}
-\@writefile{toc}{\contentsline {section}{\numberline {4.2}Inicijalizacija ZODB-a}{4}{section.4.2}\protected@file@percent }
-\newlabel{lst:db_init}{{3}{4}{Inicijalizacija baze u database.py}{lstlisting.3}{}}
-\@writefile{lol}{\contentsline {lstlisting}{\numberline {3}{\ignorespaces Inicijalizacija baze u database.py}}{4}{lstlisting.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.3}Okidači (Triggers)}{4}{section.4.3}\protected@file@percent }
-\newlabel{lst:trigger}{{4}{4}{Okidač - property setter za HP}{lstlisting.4}{}}
-\@writefile{lol}{\contentsline {lstlisting}{\numberline {4}{\ignorespaces Okidač - property setter za HP}}{4}{lstlisting.4}\protected@file@percent }
-\abx@aux@cite{0}{Pygame}
-\abx@aux@segm{0}{0}{Pygame}
-\@writefile{toc}{\contentsline {chapter}{\numberline {5}Primjeri Korištenja}{5}{chapter.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.1}Arhitektura Sustava}{5}{section.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}Upravljanje Bazom (GameDB klasa)}{5}{section.4.2}\protected@file@percent }
+\newlabel{lst:btree_query}{{1}{5}{Metoda za dohvat Top Score-ova koristeći BTree}{lstlisting.1}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {1}{\ignorespaces Metoda za dohvat Top Score-ova koristeći BTree}}{5}{lstlisting.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.3}Implementacija Okidača (Triggers)}{5}{section.4.3}\protected@file@percent }
+\newlabel{lst:hp_trigger}{{2}{5}{Implementacija okidača za promjenu statusa}{lstlisting.2}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2}{\ignorespaces Implementacija okidača za promjenu statusa}}{5}{lstlisting.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.4}Game Loop i Transakcije}{6}{section.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {5}Primjeri Korištenja}{7}{chapter.5}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
 \@writefile{lol}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {5.1}Pokretanje i Igranje}{5}{section.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5.2}Spremanje Stanja}{5}{section.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {chapter}{\numberline {6}Zaključak}{6}{chapter.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.1}Instalacija i Pokretanje}{7}{section.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.2}Scenarij Igranja}{7}{section.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.3}Resetiranje Baze}{7}{section.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {6}Zaključak}{8}{chapter.6}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
 \@writefile{lol}{\addvspace {10\p@ }}
 \acronymused{ZODB}
-\acronymused{ZODB}
-\@writefile{toc}{\contentsline {chapter}{Popis literature}{7}{chapter*.6}\protected@file@percent }
-\global \figuresfalse
+\@writefile{toc}{\contentsline {chapter}{Popis literature}{9}{chapter*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{Popis slika}{10}{chapter*.8}\protected@file@percent }
+\global \figurestrue
 \global \tablestrue
 \global \listingsfalse
-\@writefile{toc}{\contentsline {chapter}{Popis tablica}{8}{chapter*.7}\protected@file@percent }
-\abx@aux@read@bbl@mdfivesum{373021B7F6125FC1477F525C6958996F}
+\@writefile{toc}{\contentsline {chapter}{Popis tablica}{11}{chapter*.9}\protected@file@percent }
+\abx@aux@read@bbl@mdfivesum{6F1B4FA64AF2428DBA81C4EEC7EEDCEF}
 \abx@aux@defaultrefcontext{0}{OOBP2015}{none/global//global/global}
 \abx@aux@defaultrefcontext{0}{ACID2020}{none/global//global/global}
-\abx@aux@defaultrefcontext{0}{ZODB}{none/global//global/global}
-\abx@aux@defaultrefcontext{0}{Pygame}{none/global//global/global}
 \xdef \mintedoldcachechecksum{\detokenize{\minted@cachechecksum }}
-\gdef \@abspage@last{13}
+\gdef \@abspage@last{16}
