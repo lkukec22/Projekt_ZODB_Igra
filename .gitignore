@@ -1,12 +1,13 @@
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# C extensions
 *.so
+
+# Distribution / packaging
 .Python
-env/
-venv/
-ENV/
 build/
 develop-eggs/
 dist/
@@ -23,19 +24,49 @@ wheels/
 .installed.cfg
 *.egg
 
-# IDE
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# ZODB Database files
+*.fs
+*.fs.index
+*.fs.lock
+*.fs.tmp
+*.tmp
+data/*.fs
+data/*.fs.index
+data/*.fs.lock
+data/*.fs.tmp
+
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE settings
 .vscode/
 .idea/
 *.swp
-*.swo
-*~
-.DS_Store
 
-# ZODB baze
-data/game.fs*
-data/game.fs.lock
-data/game.fs.tmp
-
-# Lokalni test datoteke
-test_*.py
+# LaTeX auxiliary files
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
 *.log
+*.lot
+*.out
+*.run.xml
+*.toc
+*.synctex.gz
+#*.pdf
