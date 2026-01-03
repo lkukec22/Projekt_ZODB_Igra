@@ -70,3 +70,6 @@ Thumbs.db
 *.toc
 *.synctex.gz
 #*.pdf
+
+# Exclude entire template folder
+predlozak/
