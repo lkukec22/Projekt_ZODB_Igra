@@ -1,8 +1,8 @@
-﻿import ZODB, ZODB.FileStorage
+import ZODB, ZODB.FileStorage
 import transaction
 import os
 from persistent.mapping import PersistentMapping
-from BTrees.OOBTree import OOBTree # type: ignore # Object-Object BTree za efikasne upite
+from BTrees.OOBTree import OOBTree # type: ignore # Object-Object BTree for efficient queries
 
 class GameDB:
     def __init__(self, db_path='data/game.fs'):
@@ -17,38 +17,47 @@ class GameDB:
             if 'players' not in self.root:
                 self.root['players'] = PersistentMapping()
             
-            # --- NAPREDNA STRUKTURA: BTree za High Scores ---
+            # --- ADVANCED STRUCTURE: BTree for High Scores ---
             if 'high_scores' not in self.root:
                 self.root['high_scores'] = OOBTree() 
                 
             if 'world_state' not in self.root:
                 self.root['world_state'] = PersistentMapping({'last_login': None})
         except Exception as e:
-            print(f"Greska pri otvaranju baze: {e}")
+            print(f"Error opening database: {e}")
             raise
 
     def save(self):
         transaction.commit()
 
-    # --- NAPREDNI UPIT (BTree Range Query) ---
+    # --- ADVANCED QUERY (BTree Range Query) ---
     def get_top_scores(self, limit=5):
-        """Vraca top rezultate koristeci BTree efikasnost"""
-        # OOBTree je sortiran po kljucu. Za top scores koristimo (score, name) kao kljuc
-        # ili jednostavno sortiramo, ali BTree nam omogucuje brze range upite.
-        scores = list(self.root['high_scores'].items())
-        scores.sort(key=lambda x: x[1], reverse=True)
-        return scores[:limit]
+        """Returns top results using BTree efficiency."""
+        items = list(self.root['high_scores'].items())
+        
+        # Sort by score (first element of tuple)
+        items.sort(key=lambda x: x[1][0], reverse=True)
+        
+        # Return format: (name, score, time)
+        return [(name, val[0], val[1]) for name, val in items[:limit]]
 
-    def add_high_score(self, name, score):
-        self.root['high_scores'][name] = max(self.root['high_scores'].get(name, 0), score)
-        self.save()
+    def add_high_score(self, name, score, time_survived):
+        """Saves result as (score, time_survived) if better than previous."""
+        current_entry = self.root['high_scores'].get(name)
+        current_score = current_entry[0] if current_entry else 0
+        
+        if score > current_score:
+            self.root['high_scores'][name] = (score, time_survived)
+            self.save()
 
-    # --- UPIT (Query) ---
+    # --- QUERY ---
     def get_all_active_players(self):
-        """Vraca sve igrace koji nisu porazeni"""
-        return [p for p in self.root['players'].values() if p.status == "Aktivan"]
+        """Returns a list of all Player objects with status 'Active'"""
+        players = [p for p in self.root['players'].values() if p.status == "Active"]
+        players.sort(key=lambda x: x.name)
+        return players
 
     def close(self):
-        transaction.abort() # Osiguraj da nema aktivnih transakcija prije zatvaranja
+        transaction.abort()
         self.connection.close()
         self.db.close()
