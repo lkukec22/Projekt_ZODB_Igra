@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "=== Instalacija ZODB RPG Projekta ==="
+echo "=== Instalacija ZODB Top Down Survival Shooter Projekta ==="
 
 # 1. Virtualna okruženja
 echo "Kreiram virtualnu okruženja..."

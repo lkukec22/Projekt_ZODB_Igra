@@ -1,0 +1,14 @@
+# --- CONFIGURATION ---
+WIDTH, HEIGHT = 1024, 768
+FPS = 60
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+GRAY = (50, 50, 50)
+DARK_GRAY = (30, 30, 30)
+RED = (200, 50, 50)
+GREEN = (50, 200, 50)
+BLUE = (50, 50, 200)
+YELLOW = (255, 255, 0)
+CYAN = (0, 255, 255)

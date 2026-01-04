@@ -3,9 +3,7 @@ import random
 import math
 from persistent import Persistent
 from persistent.list import PersistentList
-
-# Constants for movement logic
-WIDTH, HEIGHT = 1024, 768
+from config import WIDTH, HEIGHT
 
 class Bullet(Persistent):
     def __init__(self, x, y, target_x, target_y):
