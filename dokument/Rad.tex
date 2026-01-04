@@ -31,7 +31,7 @@
 
 \vrstaRada{\projekt}
 
-\title{RPG Igra sa ZODB i PyGame}
+\title{Top-Down Survival Shooter sa ZODB i PyGame}
 \predmet{Baze Podataka}
 
 \author{Student Studentić} 
@@ -49,14 +49,19 @@
 \smjer{Informacijski i poslovni sustavi}
 
 
-\sazetak{Ovaj projekt prikazuje razvoj računalne igre žanra RPG (Role-Playing Game) korištenjem objektno-orijentirane baze podataka ZODB i PyGame frameworka za grafičko sučelje. Glavni cilj projekta je demonstrirati prednosti korištenja objektne baze podataka za perzistenciju kompleksnih stanja igre, izbjegavajući pritom problem nepodudarnosti impedancije (impedance mismatch) karakterističan za relacijske baze. Aplikacija implementira sustav za praćenje igrača, inventara, rezultata (High Scores) i stanja svijeta. Poseban naglasak stavljen je na implementaciju ACID transakcija, korištenje B-stabala (BTree) za indeksiranje rezultata, te implementaciju poslovne logike kroz metode modela i "property" settere koji djeluju kao okidači (triggers). Rezultat je robusna aplikacija koja transparentno sprema stanje objekata u \texttt{.fs} datoteku.}
+\sazetak{Ovaj projekt prikazuje razvoj računalne igre žanra Top-Down Survival Shooter korištenjem objektno-orijentirane baze podataka ZODB i PyGame frameworka za grafičko sučelje. Glavni cilj projekta je demonstrirati prednosti korištenja objektne baze podataka za perzistenciju velikog broja dinamičkih objekata (poput metaka i neprijatelja), izbjegavajući pritom problem nepodudarnosti impedancije (impedance mismatch) karakterističan za relacijske baze. Aplikacija implementira sustav za praćenje igrača, aktivnih projektila, neprijatelja i rezultata (High Scores). Poseban naglasak stavljen je na implementaciju ACID transakcija, korištenje B-stabala (BTree) za indeksiranje rezultata, te implementaciju poslovne logike kroz metode modela i "property" settere koji djeluju kao okidači (triggers). Rezultat je robusna aplikacija koja transparentno sprema stanje stotina objekata u \texttt{.fs} datoteku.}
 
-\kljucneRijeci{ZODB; objektne baze podataka; PyGame; RPG; Python; perzistencija; transakcije; okidači; BTree}
+\kljucneRijeci{ZODB; objektne baze podataka; PyGame; Survival Shooter; Python; perzistencija; transakcije; okidači; BTree}
 
 \acrodef{ZODB}{Zope Object Database}
-\acrodef{RPG}{Role-Playing Game}
+\acrodef{TDSS}{Top-Down Survival Shooter}
 \acrodef{OOBP}{Objektno-orijentirana baza podataka}
 \acrodef{ACID}{Atomicity, Consistency, Isolation, Durability}
+
+% FIX za longtable i colortbl konflikt
+\makeatletter
+\providecommand\LT@@hline{}
+\makeatother
 
 \begin{document}
 
@@ -70,12 +75,12 @@
 \chapter{Uvod}
 
 \section{Opis Aplikacijske Domene}
-Računalne igre su kompleksni softverski sustavi koji zahtijevaju upravljanje velikim brojem stanja u stvarnom vremenu. U žanru \ac{RPG} igara, stanje uključuje atribute lika (zdravlje, iskustvo, pozicija), inventar (predmeti, oružja), te stanje svijeta (neprijatelji, questovi). Tradicionalni pristup korištenjem relacijskih baza podataka zahtijeva mapiranje ovih objekata u tablice, što može biti neefikasno i komplicirano za razvoj.
+Računalne igre su kompleksni softverski sustavi koji zahtijevaju upravljanje velikim brojem stanja u stvarnom vremenu. U žanru \ac{TDSS} igara, stanje uključuje veliki broj aktivnih entiteta koji se brzo mijenjaju: pozicije stotina metaka, koordinate neprijatelja koji nadiru u valovima, te stanje igrača (zdravlje, \textit{power-up} statusi). Tradicionalni pristup korištenjem relacijskih baza podataka zahtijeva mapiranje svakog metka ili neprijatelja u redak tablice, što je iznimno neefikasno za ovakav tip "živog" sustava.
 
-Ovaj projekt implementira jednostavnu 2D \ac{RPG} igru gdje igrač upravlja likom, bori se protiv neprijatelja i skuplja predmete. Svi podaci o igri moraju biti trajno pohranjeni kako bi igrač mogao nastaviti igru tamo gdje je stao.
+Ovaj projekt implementira jednostavnu 2D \ac{TDSS} igru gdje igrač upravlja likom, bori se protiv hordi neprijatelja i skuplja \textit{power-up} predmete. Svi podaci o igri -- uključujući svaki ispaljeni metak i svakog neprijatelja na ekranu -- moraju biti trajno pohranjeni kako bi igrač mogao nastaviti igru točno tamo gdje je stao.
 
 \section{Motivacija i Cilj}
-Glvna motivacija za odabir \ac{ZODB} tehnologije je njezina sposobnost transparentne perzistencije Python objekata. Cilj je pokazati kako se objektna baza podataka može integrirati u petlju igre (Game Loop) te kako olakšava razvoj eliminirajući potrebu za SQL upitima i ORM (Object-Relational Mapping) slojevima.
+Glavna motivacija za odabir \ac{ZODB} tehnologije je njezina sposobnost transparentne perzistencije Python objekata. Cilj je pokazati kako se objektna baza podataka može integrirati u petlju igre (Game Loop) te kako olakšava razvoj eliminirajući potrebu za SQL upitima i ORM (Object-Relational Mapping) slojevima.
 
 \chapter{Teorijski okvir}
 
@@ -129,83 +134,138 @@ Za razliku od ER dijagrama kod relacijskih baza, model \ac{ZODB}-a najbolje se o
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-  node distance=2cm,
+  node distance=1.5cm,
   class/.style={
     rectangle, 
     draw=black, 
     fill=white,
     thick,
-    minimum width=4.5cm, 
+    minimum width=3.5cm, 
     align=center,
-    font=\small
+    font=\tiny
   },
   title/.style={
-    font=\bfseries\small,
+    font=\bfseries\scriptsize,
     align=center,
-    minimum height=0.8cm,
+    minimum height=0.6cm,
     fill=gray!20,
     draw=black,
     thick,
-    minimum width=4.5cm
+    minimum width=3.5cm
   },
   note/.style={
     rectangle,
     draw=black,
     fill=yellow!10,
     dashed,
-    font=\footnotesize,
+    font=\tiny,
     align=left,
-    minimum width=3cm
+    minimum width=2cm
   }
 ]
 
-% --- ZODB ROOT STRUCTURE ---
-\node[draw=black, ellipse, thick, fill=gray!10] (root) at (-4, 2) {ZODB Root};
-\node[class, minimum width=3.5cm, right=1cm of root] (mapping) {
+% --- ZODB ROOT STRUCTURE (Left Side) ---
+\node[draw=black, ellipse, thick, fill=gray!10, font=\scriptsize] (root) at (-7, 0) {ZODB Root};
+
+\node[class, minimum width=2.5cm] (mapping) at (-4, 2) {
     \textbf{players}\\
     \textit{PersistentMapping}
 };
+
+\node[class, minimum width=2.5cm] (btree) at (-4, 0) {
+    \textbf{high\_scores}\\
+    \textit{OOBTree}
+};
+
+\node[class, minimum width=2.5cm] (world) at (-4, -2) {
+    \textbf{world\_state}\\
+    \textit{PersistentMapping}
+};
+
 \draw[->, thick] (root) -- (mapping);
+\draw[->, thick] (root) -- (btree);
+\draw[->, thick] (root) -- (world);
 
-
-% --- PLAYER CLASS ---
-\node[title] (player_title) at (0,-1) {<<Persistent>>\\Player};
+% --- PLAYER CLASS (Center) ---
+\node[title] (player_title) at (1,0) {<<Persistent>>\\Player};
 \node[class, below=0pt of player_title, align=left] (player_attr) {
     + name: str\\
     - \_hp: int\\
-    + x: int\\
-    + y: int\\
+    + x, y: int\\
     + score: int\\
+    + multiplier: float\\
+    + time\_survived: float\\
     + inventory: PersistentList\\
+    + saved\_enemies: PersistentList\\
+    + saved\_bullets: PersistentList\\
+    + saved\_items: PersistentList\\
     + status: str
 };
 \node[class, below=0pt of player_attr, align=left] (player_methods) {
     + move(dx, dy)\\
     + take\_damage(amount)\\
     + use\_item(item)\\
+    + add\_score(points)\\
+    + update\_time(dt)\\
+    + reset()\\
     + hp(value) \textit{[setter]}
 };
 
 % Connect Mapping to Player
-\draw[->, thick, dashed] (mapping) -- (player_title) node[midway, right] {key: name};
+\draw[->, thick, dashed] (mapping) -- (player_title) node[midway, above, font=\tiny] {key: name};
 
+% --- RELATED CLASSES (Right Side) ---
 
-% --- ITEM CLASS ---
-\node[title] (item_title) at (7,-1) {<<Persistent>>\\Item};
+% ITEM (Top Right)
+\node[title] (item_title) at (7, 4) {<<Persistent>>\\Item};
 \node[class, below=0pt of item_title, align=left] (item_attr) {
     + name: str\\
     + item\_type: str\\
     + value: int\\
-    + x: int\\
-    + y: int
+    + x, y: int
 };
 
-% --- RELATIONSHIP ---
-% Diamond (composition/aggregation) on Player side
-\draw[diamond-, thick] (player_attr.east) -- (item_attr.west) 
-    node[midway, above] {sadrži}
-    node[near start, below] {1}
-    node[near end, below] {0..*};
+% ENEMY (Middle Right)
+\node[title] (enemy_title) at (7, 0) {<<Persistent>>\\Enemy};
+\node[class, below=0pt of enemy_title, align=left] (enemy_attr) {
+    + x, y: int\\
+    + speed: float
+};
+\node[class, below=0pt of enemy_attr, align=left] (enemy_methods) {
+    + move\_towards\_player(px, py)\\
+    + draw(screen)
+};
+
+% BULLET (Bottom Right)
+\node[title] (bullet_title) at (7, -4) {<<Persistent>>\\Bullet};
+\node[class, below=0pt of bullet_title, align=left] (bullet_attr) {
+    + x, y: float\\
+    + speed: int\\
+    + dx, dy: float
+};
+\node[class, below=0pt of bullet_attr, align=left] (bullet_methods) {
+    + move()\\
+    + draw(screen)
+};
+
+% --- RELATIONSHIPS ---
+% Player <>-- Item (Inventory + Saved Items)
+\draw[diamond-, thick] (player_attr.north east) -- (item_attr.west) 
+    node[midway, above, sloped, font=\tiny] {inventory, saved\_items}
+    node[near start, above, font=\tiny] {1}
+    node[near end, below, font=\tiny] {0..*};
+
+% Player <>-- Enemy (Saved Enemies)
+\draw[diamond-, thick] (player_attr.east) -- (enemy_attr.west) 
+    node[midway, above, font=\tiny] {saved\_enemies}
+    node[near start, below, font=\tiny] {1}
+    node[near end, below, font=\tiny] {0..*};
+
+% Player <>-- Bullet (Saved Bullets)
+\draw[diamond-, thick] (player_attr.south east) -- (bullet_title.west) 
+    node[midway, above, sloped, font=\tiny] {saved\_bullets}
+    node[near start, below, font=\tiny] {1}
+    node[near end, below, font=\tiny] {0..*};
 
 \end{tikzpicture}
 \caption{UML Model podataka s prikazom ZODB hijerarhije}
@@ -217,12 +277,12 @@ Korijenski objekt (\texttt{db.root}) sadrži tri glavne kolekcije:
 \begin{enumerate}
     \item \texttt{players} (\texttt{PersistentMapping}): Mapa koja čuva objekte igrača, gdje je ključ ime igrača.
     \item \texttt{high\_scores} (\texttt{OOBTree}): B-stablo za efikasno čuvanje i dohvaćanje najboljih rezultata. OOBTree je optimiziran za velike količine podataka i pretraživanje raspona.
-    \item \texttt{world\_state} (\texttt{PersistentMapping}): Spremište za globalno stanje svijeta (npr. vrijeme zadnjeg prijavljivanja).
+    \item \texttt{world\_state} (\texttt{PersistentMapping}): Spremište za globalno stanje svijeta (npr. ime zadnjeg igrača).
 \end{enumerate}
 
 \section{Klase Podataka}
 
-Glvni entiteti u sustavu su \texttt{Player} i \texttt{Item}. Obje klase nasljeđuju \texttt{Persistent} kako bi ih ZODB mogao pratiti.
+Glavni entiteti u sustavu su \texttt{Player} i \texttt{Item}. Obje klase nasljeđuju \texttt{Persistent} kako bi ih ZODB mogao pratiti.
 
 \subsection{Klasa Player}
 Predstavlja igrača u igri. Sadrži logiku kretanja, zdravlja i inventara.
@@ -247,9 +307,19 @@ Predstavlja igrača u igri. Sadrži logiku kretanja, zdravlja i inventara.
 \hline
 \texttt{score} & int & Trenutni rezultat. \\
 \hline
-\texttt{inventory} & PersistentList & Lista objekata tipa \texttt{Item}. \\
+\texttt{multiplier} & float & Množitelj bodova (povećava se prikupljanjem). \\
 \hline
-\texttt{status} & string & Stanje ("Aktivan", "Poražen"). \\
+\texttt{time\_survived} & float & Vrijeme preživljavanja u sekundama. \\
+\hline
+\texttt{inventory} & PersistentList & Lista prikupljenih predmeta. \\
+\hline
+\texttt{saved\_enemies} & PersistentList & Lista aktivnih neprijatelja (za save/load). \\
+\hline
+\texttt{saved\_bullets} & PersistentList & Lista aktivnih metaka (za save/load). \\
+\hline
+\texttt{saved\_items} & PersistentList & Lista ne-prikupljenih predmeta na mapi. \\
+\hline
+\texttt{status} & string & Stanje ("Active", "Defeated"). \\
 \hline
 \end{longtable}
 
@@ -281,10 +351,13 @@ Klasa \texttt{GameDB} enkapsulira sve operacije nad bazom. Prilikom inicijalizac
 \begin{lstlisting}[caption={Metoda za dohvat Top Score-ova koristeći BTree},label={lst:btree_query}]
 def get_top_scores(self, limit=5):
     """ Vraca top rezultate koristeci BTree efikasnost"""
-    scores = list(self.root['high_scores'].items())
-    # Sortiranje u memoriji jer su kljucevi imena, a vrijednosti bodovi
-    scores.sort(key=lambda x: x[1], reverse=True)
-    return scores[:limit]
+    items = list(self.root['high_scores'].items())
+    
+    # Sortiranje po bodovima (prvi element u tuple-u vrijednosti)
+    items.sort(key=lambda x: x[1][0], reverse=True)
+    
+    # Formatiranje povrata: (name, score, time)
+    return [(name, val[0], val[1]) for name, val in items[:limit]]
 \end{lstlisting}
 
 \section{Implementacija Okidača (Triggers)}
@@ -294,9 +367,9 @@ ZODB nema klasične SQL okidače, ali se oni elegantno implementiraju koristeći
 @hp.setter
 def hp(self, value):
     self._hp = min(100, max(0, value))
-    # OKIDAC: Ako je HP 0, promijeni status u "Poražen"
+    # OKIDAC: Ako je HP 0, promijeni status u "Defeated"
     if self._hp == 0:
-        self.status = "Poražen"  # Automatska promjena
+        self.status = "Defeated"  # Automatska promjena
     # Javljamo ZODB-u da spremi promjenu
     self._p_changed = True  
 \end{lstlisting}
@@ -308,7 +381,7 @@ Igra se odvija u beskonačnoj petlji koja obrađuje ulaze, ažurira stanje i isc
 \begin{enumerate}
     \item Prilikom izlaza iz igre.
     \item Prilikom ažuriranja High Score tablice (kraj igre).
-    \item Na zahtjev korisnika (tipka X).
+    \item Na zahtjev korisnika (tipka ESC za povratak u meni).
 \end{enumerate}
 
 \chapter{Primjeri Korištenja}
@@ -321,8 +394,8 @@ Aplikacija dolazi s instalacijskom skriptom \texttt{setup.py} koja instalira pot
 \begin{enumerate}
     \item \textbf{Početak:} Igrač pokreće igru. Ako je prvi put, kreira se novi lik "Igrac1" na poziciji (400, 300).
     \item \textbf{Akcija:} Igrač se kreće tipkama W, A, S, D i puca lijevim klikom miša.
-    \item \textbf{Prikupljanje:} Ubijanjem neprijatelja (crveni krugovi) ispadaju predmeti (žuti i cijan kvadrati). Igrač ih skuplja prelaskom preko njih, čime se oni dodaju u \texttt{PersistentList} inventar i odmah primjenjuju (povećanje HP-a ili bodova).
-    \item \textbf{Spremanje:} Igrač mora prekinuti igru. Pritiskom na 'X', poziva se \texttt{transaction.commit()}.
+    \item \textbf{Prikupljanje:} Ubijanjem neprijatelja (crveni krugovi) ispadaju predmeti (žuti kvadrati). Igrač ih skuplja prelaskom preko njih, čime se oni dodaju u \texttt{PersistentList} inventar i odmah primjenjuju (povećanje HP-a ili bodova).
+    \item \textbf{Spremanje:} Igrač mora prekinuti igru. Pritiskom na 'ESC', igra se pauzira, vraća u meni i poziva se \texttt{transaction.commit()}.
     \item \textbf{Nastavak:} Sljedeći dan igrač ponovno pokreće igru. Lik se nalazi na točno istoj poziciji, s istim brojem bodova i istim inventarom kao prije gašenja.
     \item \textbf{Game Over:} Ako HP padne na 0, igra završava. Rezultat se upisuje u \texttt{high\_scores} B-stablo u bazi. Prikazuje se lista najboljih rezultata dohvaćena iz baze.
 \end{enumerate}
