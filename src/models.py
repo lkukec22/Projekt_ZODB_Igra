@@ -5,7 +5,7 @@ from persistent import Persistent
 from persistent.list import PersistentList
 from config import WIDTH, HEIGHT
 
-class Bullet(Persistent):
+class Bullet:
     def __init__(self, x, y, target_x, target_y):
         self.x = x
         self.y = y
@@ -17,12 +17,11 @@ class Bullet(Persistent):
     def move(self):
         self.x += self.dx
         self.y += self.dy
-        self._p_changed = True
 
     def draw(self, screen):
         pygame.draw.circle(screen, (255, 255, 0), (int(self.x), int(self.y)), 5)
 
-class Enemy(Persistent):
+class Enemy:
     def __init__(self, difficulty_multiplier=1.0):
         side = random.randint(0, 3)
         if side == 0: self.x, self.y = random.randint(0, WIDTH), -50
@@ -37,12 +36,11 @@ class Enemy(Persistent):
         angle = math.atan2(player_y - self.y, player_x - self.x)
         self.x += math.cos(angle) * self.speed
         self.y += math.sin(angle) * self.speed
-        self._p_changed = True
 
     def draw(self, screen):
         pygame.draw.circle(screen, (200, 50, 50), (int(self.x), int(self.y)), 15)
 
-class Item(Persistent):
+class Item:
     def __init__(self, name, item_type, value):
         self.name = name
         self.item_type = item_type # 'heal' or 'score'

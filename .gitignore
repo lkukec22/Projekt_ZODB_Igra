@@ -32,6 +32,7 @@ ENV/
 
 # ZODB Database files
 *.fs
+*.fs.old
 *.fs.index
 *.fs.lock
 *.fs.tmp
@@ -73,5 +74,5 @@ Thumbs.db
 
 # Exclude entire template folder
 predlozak/
-additions.md
 *.txt
+mdfiles/

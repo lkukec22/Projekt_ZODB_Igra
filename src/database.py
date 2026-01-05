@@ -1,8 +1,9 @@
 import ZODB, ZODB.FileStorage
 import transaction
 import os
+import time
 from persistent.mapping import PersistentMapping
-from BTrees.OOBTree import OOBTree # type: ignore # Object-Object BTree for efficient queries
+from BTrees.OOBTree import OOBTree  # type: ignore
 
 class GameDB:
     def __init__(self, db_path='data/game.fs'):
@@ -17,7 +18,7 @@ class GameDB:
             if 'players' not in self.root:
                 self.root['players'] = PersistentMapping()
             
-            # --- ADVANCED STRUCTURE: BTree for High Scores ---
+
             if 'high_scores' not in self.root:
                 self.root['high_scores'] = OOBTree() 
                 
@@ -30,7 +31,14 @@ class GameDB:
     def save(self):
         transaction.commit()
 
-    # --- ADVANCED QUERY (BTree Range Query) ---
+    def pack(self, days=0):
+        """Packs the storage, removing old object versions."""
+        try:
+            self.db.pack(time.time() - days * 86400)
+        except Exception as e:
+            print(f"Error packing DB: {e}")
+
+
     def get_top_scores(self, limit=5):
         """Returns top results using BTree efficiency."""
         items = list(self.root['high_scores'].items())
@@ -50,7 +58,7 @@ class GameDB:
             self.root['high_scores'][name] = (score, time_survived)
             self.save()
 
-    # --- QUERY ---
+
     def get_all_active_players(self):
         """Returns a list of all Player objects with status 'Active'"""
         players = [p for p in self.root['players'].values() if p.status == "Active"]

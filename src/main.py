@@ -18,21 +18,18 @@ class GameApp:
         self.countdown_font = pygame.font.Font(None, 300)
         
         self.db = GameDB()
-        self.state = "MENU" # MENU, GAME, LEADERBOARD, GAMEOVER, LOAD_GAME, COUNTDOWN
+        self.state = "MENU"
         
         self.player_name = "Player1"
         self.player = None
         
-        # Menu Handler
         self.menu = Menu(self)
 
-        # Game Objects
         self.enemies = []
         self.bullets = []
         self.dropped_items = []
         self.spawn_timer = 0
         
-        # Countdown variables
         self.countdown_val = 3
         self.last_count_tick = 0
 
@@ -61,7 +58,6 @@ class GameApp:
         
         self.player = self.db.root['players'][self.player_name]
         
-        # Save last played player to world state
         self.db.root['world_state']['last_played'] = self.player_name
         self.db.save()
         
@@ -159,23 +155,48 @@ class GameApp:
                 self.enemies.append(Enemy(difficulty))
                 self.spawn_timer = 0
 
+            grid_size = 100
+            enemy_grid = {}
+            for e in self.enemies:
+                gx = int(e.x // grid_size)
+                gy = int(e.y // grid_size)
+                if (gx, gy) not in enemy_grid:
+                    enemy_grid[(gx, gy)] = []
+                enemy_grid[(gx, gy)].append(e)
+
             for b in self.bullets[:]:
                 b.move()
                 if b.x < 0 or b.x > WIDTH or b.y < 0 or b.y > HEIGHT:
                     self.bullets.remove(b)
                     continue
-                for e in self.enemies[:]:
-                    if math.hypot(b.x - e.x, b.y - e.y) < 20:
-                        if random.random() < 0.4:
-                            item_type = 'score'
-                            val = 50
-                            new_item = Item(f"Drop_{item_type}", item_type, val)
-                            new_item.x, new_item.y = e.x, e.y
-                            self.dropped_items.append(new_item)
-                        if e in self.enemies: self.enemies.remove(e)
-                        if b in self.bullets: self.bullets.remove(b)
-                        self.player.add_score(10)
-                        break
+                
+                bgx = int(b.x // grid_size)
+                bgy = int(b.y // grid_size)
+                
+                found_hit = False
+                for dx in range(-1, 2):
+                    for dy in range(-1, 2):
+                        if found_hit: break
+                        cell_enemies = enemy_grid.get((bgx + dx, bgy + dy), [])
+                        for e in cell_enemies:
+                            if math.hypot(b.x - e.x, b.y - e.y) < 20:
+                                if random.random() < 0.4:
+                                    item_type = 'score'
+                                    val = 50
+                                    new_item = Item(f"Drop_{item_type}", item_type, val)
+                                    new_item.x, new_item.y = e.x, e.y
+                                    self.dropped_items.append(new_item)
+                                
+                                if e in self.enemies: 
+                                    self.enemies.remove(e)
+                                    egx, egy = int(e.x // grid_size), int(e.y // grid_size)
+                                    if e in enemy_grid.get((egx, egy), []):
+                                         enemy_grid[(egx, egy)].remove(e)
+
+                                if b in self.bullets: self.bullets.remove(b)
+                                self.player.add_score(10)
+                                found_hit = True
+                                break
 
             for e in self.enemies[:]:
                 e.move_towards_player(self.player.x + 20, self.player.y + 20)
@@ -233,10 +254,14 @@ class GameApp:
                 self.menu.handle_load_game(events)
             elif self.state == "COUNTDOWN":
                 self.handle_countdown(events)
+            elif self.state == "EXIT":
+                running = False
             
             pygame.display.flip()
             self.clock.tick(FPS)
         
+        print("Packing database...")
+        self.db.pack()
         self.db.close()
         pygame.quit()
 

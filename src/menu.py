@@ -25,7 +25,6 @@ class Menu:
         for event in events:
             self.name_input.handle_event(event)
             if self.btn_start.is_clicked(event):
-                # Update player name from input
                 if self.name_input.text:
                     self.game.player_name = self.name_input.text
                 self.game.load_player()
@@ -37,8 +36,7 @@ class Menu:
                 self.game.state = "LEADERBOARD"
             elif self.btn_quit.is_clicked(event):
                 self.game.save_game_state()
-                pygame.quit()
-                sys.exit()
+                self.game.state = "EXIT"
 
         self.name_input.draw(self.game.screen, self.game.font)
         self.btn_start.draw(self.game.screen, self.game.font)

@@ -1,8 +1,6 @@
-# --- CONFIGURATION ---
 WIDTH, HEIGHT = 1024, 768
 FPS = 60
 
-# Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (50, 50, 50)
