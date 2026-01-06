@@ -12,7 +12,7 @@ class GameApp:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        pygame.display.set_caption("ZODB Top Down Survival Shooter - Advanced Persistence")
+        pygame.display.set_caption("Top Down Survival Shooter")
         self.clock = pygame.time.Clock()
         
         init_sprites()
@@ -24,7 +24,7 @@ class GameApp:
         self.db = GameDB()
         self.state = "MENU"
         
-        self.player_name = "Player1"
+        self.player_name = "lk"
         self.player = None
         
         self.menu = Menu(self)
