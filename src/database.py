@@ -32,7 +32,6 @@ class GameDB:
         transaction.commit()
 
     def pack(self, days=0):
-        """Packs the storage, removing old object versions."""
         try:
             self.db.pack(time.time() - days * 86400)
         except Exception as e:
@@ -40,7 +39,6 @@ class GameDB:
 
 
     def get_top_scores(self, limit=5):
-        """Returns top results using BTree efficiency."""
         items = list(self.root['high_scores'].items())
         
         # Sort by score (first element of tuple)
@@ -50,7 +48,6 @@ class GameDB:
         return [(name, val[0], val[1]) for name, val in items[:limit]]
 
     def add_high_score(self, name, score, time_survived):
-        """Saves result as (score, time_survived) if better than previous."""
         current_entry = self.root['high_scores'].get(name)
         current_score = current_entry[0] if current_entry else 0
         
@@ -60,7 +57,6 @@ class GameDB:
 
 
     def get_all_active_players(self):
-        """Returns a list of all Player objects with status 'Active'"""
         players = [p for p in self.root['players'].values() if p.status == "Active"]
         players.sort(key=lambda x: x.name)
         return players

@@ -442,37 +442,38 @@ CREATE TABLE high_scores (
 Predstavlja igrača u igri. Sadrži logiku kretanja, zdravlja i inventara.
 
 \begin{table}[H]
-\centering
-\caption{Atributi klase Player}
-\label{tab:player_attr}
-\small
-\begin{tabular}{|p{3.5cm}|p{3cm}|p{6.5cm}|}
-\hline
-\textbf{Atribut} & \textbf{Tip} & \textbf{Opis} \\
-\hline
-\texttt{name} & string & Jedinstveno ime igraca (ID). \\
-\hline
-\texttt{\_hp} & int & Trenutno zdravlje (0-100). \\
-\hline
-\texttt{x, y} & int & Koordinate na ekranu. \\
-\hline
-\texttt{score} & int & Trenutni rezultat. \\
-\hline
-\texttt{multiplier} & float & Mnozitelj bodova. \\
-\hline
-\texttt{time\_survived} & float & Vrijeme prezivljavanja u sekundama. \\
-\hline
-\texttt{inventory} & PersistentList & Lista prikupljenih predmeta. \\
-\hline
-\texttt{saved\_enemies} & PersistentList & Lista aktivnih neprijatelja. \\
-\hline
-\texttt{saved\_bullets} & PersistentList & Lista aktivnih metaka. \\
-\hline
-\texttt{saved\_items} & PersistentList & Lista predmeta na mapi. \\
-\hline
-\texttt{status} & string & Stanje (Active, Defeated). \\
-\hline
-\end{tabular}
+    \centering
+    \caption{Atributi klase Player}
+    \label{tab:player_attr}
+    \begin{tabular}{|l|l|l|}
+    \hline
+    \textbf{Atribut} & \textbf{Tip} & \textbf{Opis} \\
+    \hline
+    \texttt{name} & string & Jedinstveno ime igrača (ID). \\
+    \hline
+    \texttt{\_hp} & int & Trenutno zdravlje (0--100). \\
+    \hline
+    \texttt{x} & int & Horizontalna koordinata na ekranu. \\
+    \hline
+    \texttt{y} & int & Vertikalna koordinata na ekranu. \\
+    \hline
+    \texttt{score} & int & Trenutni broj osvojenih bodova. \\
+    \hline
+    \texttt{multiplier} & float & Množitelj bodova. \\
+    \hline
+    \texttt{time\_survived} & float & Vrijeme preživljavanja u sekundama. \\
+    \hline
+    \texttt{inventory} & PersistentList & Lista prikupljenih predmeta. \\
+    \hline
+    \texttt{saved\_enemies} & PersistentList & Lista aktivnih neprijatelja. \\
+    \hline
+    \texttt{saved\_bullets} & PersistentList & Lista aktivnih metaka. \\
+    \hline
+    \texttt{saved\_items} & PersistentList & Lista predmeta na mapi. \\
+    \hline
+    \texttt{status} & string & Stanje igrača (Active, Defeated). \\
+    \hline
+    \end{tabular}
 \end{table}
 
 \subsection{Klasa Item}

@@ -6,6 +6,7 @@ from database import GameDB
 from models import Player, Item, Enemy, Bullet
 from config import *
 from menu import Menu
+from sprite_loader import init_sprites, AnimatedMageSprite
 
 class GameApp:
     def __init__(self):
@@ -13,6 +14,9 @@ class GameApp:
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("ZODB Top Down Survival Shooter - Advanced Persistence")
         self.clock = pygame.time.Clock()
+        
+        init_sprites()
+        
         self.font = pygame.font.Font(None, 36)
         self.title_font = pygame.font.Font(None, 74)
         self.countdown_font = pygame.font.Font(None, 300)
@@ -29,6 +33,12 @@ class GameApp:
         self.bullets = []
         self.dropped_items = []
         self.spawn_timer = 0
+        
+        # Sprite za igrača (mage)
+        self.player_sprite = AnimatedMageSprite(scale=4.0)
+        self.last_shot = False
+        self.player_dx = 0
+        self.player_dy = 0
         
         self.countdown_val = 3
         self.last_count_tick = 0
@@ -85,8 +95,12 @@ class GameApp:
         for it in self.dropped_items:
             pygame.draw.rect(self.screen, YELLOW, (it.x, it.y, 15, 15))
 
-        color = GREEN if self.player.status == "Active" else GRAY
-        pygame.draw.rect(self.screen, color, (self.player.x, self.player.y, 40, 40))
+        if self.player.status == "Active":
+            player_frame = self.player_sprite.get_current_frame()
+            frame_rect = player_frame.get_rect(center=(self.player.x + 20, self.player.y + 20))
+            self.screen.blit(player_frame, frame_rect)
+        else:
+            pygame.draw.rect(self.screen, GRAY, (self.player.x, self.player.y, 40, 40))
 
         time_str = self.format_time(self.player.time_survived)
         name_surf = self.font.render(f"Player: {self.player.name}", True, CYAN)
@@ -136,6 +150,7 @@ class GameApp:
             if event.type == pygame.MOUSEBUTTONDOWN and self.player.status == "Active":
                 mx, my = pygame.mouse.get_pos()
                 self.bullets.append(Bullet(self.player.x + 20, self.player.y + 20, mx, my))
+                self.last_shot = True
 
         if self.player.status == "Active":
             self.player.update_time(dt)
@@ -148,6 +163,18 @@ class GameApp:
             if keys[pygame.K_w]: dy = -5
             if keys[pygame.K_s]: dy = 5
             if dx != 0 or dy != 0: self.player.move(dx, dy)
+            
+            self.player_dx = dx
+            self.player_dy = dy
+            
+            mx, my = pygame.mouse.get_pos()
+            self.player_sprite.update(
+                dt, dx, dy,
+                is_shooting=self.last_shot,
+                mouse_x=mx, mouse_y=my,
+                player_x=self.player.x + 20, player_y=self.player.y + 20
+            )
+            self.last_shot = False
 
             spawn_rate = max(20, 60 - int(difficulty * 5))
             self.spawn_timer += 1
@@ -200,6 +227,7 @@ class GameApp:
 
             for e in self.enemies[:]:
                 e.move_towards_player(self.player.x + 20, self.player.y + 20)
+                e.update(dt)
                 if math.hypot(e.x - (self.player.x + 20), e.y - (self.player.y + 20)) < 30:
                     self.player.take_damage(10)
                     if e in self.enemies: self.enemies.remove(e)
