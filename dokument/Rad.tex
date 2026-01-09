@@ -1,5 +1,7 @@
 \documentclass[]{foi} 
 
+\vrstaRada{\projekt}
+\predmet{\predmetTBP}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{lipsum}
@@ -72,9 +74,7 @@
 \makeatletter \def\@dotsep{4.5} \makeatother
 \pagestyle{plain}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Opis Aplikacijske Domene}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Pregled domene}
 
@@ -109,9 +109,13 @@ Projekt predstavlja top-down survival shooter igru s naprednim sustavom perziste
     \item \textbf{High score tracking} -- automatsko bilježenje najboljeg rezultata po igraču
 \end{itemize}
 
-\section{Motivacija za odabir ZODB-a}
+\section{Motivacija za odabir teme}
 
-Zašto \ac{ZODB}, a ne relacijska baza (PostgreSQL/MySQL)?
+Motivacija za odabir ove teme proizlazi iz osobnog interesa za razvoj videoigara. Videoigre su kompleksni softverski sustavi koji zahtijevaju efikasno upravljanje podacima -- od spremanja stanja igrača, praćenja napretka, do implementacije ljestvica rezultata. Baze podataka predstavljaju ključnu komponentu svake moderne igre, bilo da se radi o jednostavnim lokalnim spremanjima ili složenim multiplayer sustavima. Ovaj projekt omogućuje neki uvod na temu videoigra i baza podataka.
+
+\section{Zašto ZODB?}
+
+Zašto \\ac{ZODB}, a ne relacijska baza (PostgreSQL/MySQL)?
 
 \begin{enumerate}
     \item \textbf{Prirodno mapiranje Python objekata}
@@ -158,9 +162,7 @@ Zašto \ac{ZODB}, a ne relacijska baza (PostgreSQL/MySQL)?
     \item Multi-user web aplikacija s konkurentnim pristupom
 \end{itemize}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Teorijski Uvod}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Objektno-orijentirane baze podataka (OODBMS)}
 
@@ -231,21 +233,21 @@ Objektno-orijentirane baze podataka (\ac{OOBP}) su sustavi za upravljanje bazama
 \subsection{Ključne komponente}
 
 \begin{enumerate}
-    \item \textbf{persistent.Persistent}
+    \item \textbf{persistent.Persistent} \cite{Persistent}
     \begin{itemize}
         \item Bazna klasa za sve perzistentne objekte
         \item Automatsko praćenje promjena (\texttt{\_p\_changed})
         \item Lazy loading objekta iz baze
     \end{itemize}
     
-    \item \textbf{transaction modul}
+    \item \textbf{transaction modul} \cite{Transaction}
     \begin{itemize}
         \item \texttt{transaction.commit()} -- potvrđuje transakciju
         \item \texttt{transaction.abort()} -- poništava promjene
         \item Savepoint funkcionalnost
     \end{itemize}
     
-    \item \textbf{BTrees}
+    \item \textbf{BTrees} \cite{BTrees}
     \begin{itemize}
         \item Balansirano stablo optimizirano za ZODB
         \item \texttt{OOBTree} -- Object-to-Object mapping
@@ -281,7 +283,7 @@ Objektno-orijentirane baze podataka (\ac{OOBP}) su sustavi za upravljanje bazama
     \item \textbf{Vendor lock-in} -- migracija između OODBMS sustava je teška
 \end{enumerate}
 
-\section{Usporedba OODBMS vs RDBMS}
+\section{Usporedba OODBMS vs RDBMS} \cite{Elmasri2015, Cattell1994}
 
 \begin{table}[H]
     \centering
@@ -295,7 +297,7 @@ Objektno-orijentirane baze podataka (\ac{OOBP}) su sustavi za upravljanje bazama
     \hline
     Kompleksni objekti & Native podrška & Denormalizacija/JSON \\
     \hline
-    Transakcije & ACID & ACID \\
+    Transakcije & ACID \cite{ACID2020} & ACID \\
     \hline
     Skalabilnost & Ograničena (FileStorage) & Odlična \\
     \hline
@@ -308,27 +310,18 @@ Objektno-orijentirane baze podataka (\ac{OOBP}) su sustavi za upravljanje bazama
     \end{tabular}
 \end{table}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Model Baze Podataka}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{UML dijagram klasa -- Model baze podataka}
 
-% **OVDJE UBACI SLIKU: uml_model_baze.png**
-% Slika treba prikazivati Mermaid classDiagram sa ZODBRoot, Player, Enemy, Bullet, Item, GameDB klasama
 \begin{figure}[H]
     \centering
-    \textbf{[OVDJE UBACI SLIKU: uml\_model\_baze.png]}
-    
-    \vspace{1cm}
-    \textit{Slika treba prikazivati UML dijagram klasa s klasama: ZODBRoot, Player, Enemy, Bullet, Item, GameDB i njihovim relacijama (agregacija, asocijacija). Player ima <<Persistent>> stereotip.}
-    \vspace{1cm}
-    
-    % Kad budes imao sliku, odkomentiraj sljedeće:
-    % \includegraphics[width=0.9\textwidth]{slike/uml_model_baze.png}
+    \includegraphics[width=0.9\textwidth]{slike/uml_model_baze.png}
     \caption{UML dijagram klasa -- Model baze podataka}
     \label{fig:uml_model_baze}
 \end{figure}
+
+Dijagram prikazuje strukturu ZODB baze podataka. Korijenski objekt \texttt{ZODBRoot} sadrži tri kolekcije: \texttt{players} za spremanje igrača, \texttt{high\_scores} (OOBTree) za ljestvicu rezultata, te \texttt{world\_state} za globalno stanje igre. Klasa \texttt{Player} označena je stereotipom \texttt{<<Persistent>>} jer naslijeđuje ZODB-ovu baznu klasu za perzistenciju. Player agregira liste objekata \texttt{Enemy}, \texttt{Bullet} i \texttt{Item} koje se spremaju kao snapshot prilikom pauziranja igre. Klasa \texttt{GameDB} služi kao wrapper za ZODB operacije.
 
 \textbf{Legenda:}
 \begin{itemize}
@@ -339,39 +332,25 @@ Objektno-orijentirane baze podataka (\ac{OOBP}) su sustavi za upravljanje bazama
 
 \section{UML dijagram aplikacije}
 
-% **OVDJE UBACI SLIKU: uml_aplikacija.png**
-% Slika treba prikazivati GameApp, Menu, Button, InputBox klase i njihove relacije
 \begin{figure}[H]
     \centering
-    \textbf{[OVDJE UBACI SLIKU: uml\_aplikacija.png]}
-    
-    \vspace{1cm}
-    \textit{Slika treba prikazivati UML dijagram klasa aplikacije: GameApp, Menu, Button, InputBox i njihove relacije. GameApp sadrži reference na GameDB, Player i Menu.}
-    \vspace{1cm}
-    
-    % Kad budes imao sliku, odkomentiraj sljedeće:
-    % \includegraphics[width=0.8\textwidth]{slike/uml_aplikacija.png}
+    \includegraphics[width=0.8\textwidth]{slike/uml_aplikacija.png}
     \caption{UML dijagram klasa -- Aplikacija}
     \label{fig:uml_aplikacija}
 \end{figure}
 
+Dijagram prikazuje arhitekturu PyGame aplikacije. Klasa \texttt{GameApp} je glavni kontroler koji upravlja igrom -- sadrži reference na \texttt{GameDB} (baza podataka), \texttt{Player} (trenutni igrač) i \texttt{Menu} (sustav izbornika). Klasa \texttt{Menu} koristi UI komponente \texttt{Button} i \texttt{InputBox} za interakciju s korisnikom. Ova arhitektura slijedi obrazac razdvajanja odgovornosti (Separation of Concerns).
+
 \section{Dijagram stanja aplikacije}
 
-% **OVDJE UBACI SLIKU: dijagram_stanja.png**
-% Slika treba prikazivati stateDiagram: MENU -> COUNTDOWN -> GAME -> GAME_OVER -> MENU
 \begin{figure}[H]
     \centering
-    \textbf{[OVDJE UBACI SLIKU: dijagram\_stanja.png]}
-    
-    \vspace{1cm}
-    \textit{Slika treba prikazivati dijagram stanja aplikacije sa stanjima: MENU, COUNTDOWN, GAME, LOAD\_GAME, LEADERBOARD, GAME\_OVER. Prijelazi: MENU->COUNTDOWN (Start), COUNTDOWN->GAME, GAME->MENU (ESC), GAME->GAME\_OVER (HP=0), GAME\_OVER->MENU.}
-    \vspace{1cm}
-    
-    % Kad budes imao sliku, odkomentiraj sljedeće:
-    % \includegraphics[width=0.8\textwidth]{slike/dijagram_stanja.png}
+    \includegraphics[width=0.8\textwidth]{slike/dijagram_stanja.png}
     \caption{Dijagram stanja aplikacije}
     \label{fig:dijagram_stanja}
 \end{figure}
+
+Dijagram stanja prikazuje tijek aplikacije između različitih ekrana. Aplikacija započinje u stanju \texttt{MENU} gdje korisnik može odabrati novu igru, nastavak postojeće, pregled ljestvice rezultata ili izlaz. Pokretanje igre vodi kroz \texttt{COUNTDOWN} (odbrojavanje 3-2-1) u glavno stanje \texttt{GAME}. Igra završava u \texttt{GAME\_OVER} kada igračevo zdravlje padne na nulu, ili se vraća u \texttt{MENU} pritiskom tipke ESC (uz automatsko spremanje stanja).
 
 \textbf{Tok igre:}
 \begin{verbatim}
@@ -499,11 +478,9 @@ Predstavlja predmete koje igrač može pokupiti.
 
 Umjesto toga, koristi se \textbf{snapshot pristup}: objekti žive u RAM-u tijekom igre, a samo kada igrač pauzira (ESC), sprema se snapshot u \texttt{PersistentList}.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Implementacija}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Aplikacija je implementirana u programskom jeziku Python koristeći \texttt{PyGame} biblioteku za grafiku i ulazne uređaje, te \texttt{ZODB} za sloj podataka.
+Aplikacija je implementirana u programskom jeziku Python \cite{Python} koristeći \texttt{PyGame} \cite{Pygame} biblioteku za grafiku i ulazne uređaje, te \texttt{ZODB} \cite{ZODB} za sloj podataka.
 
 \section{Struktura Projekta}
 
@@ -513,9 +490,12 @@ Projekt_ZODB_Igra/
 |   +-- main.py          # Glavna igra loop i GameApp klasa
 |   +-- database.py      # ZODB wrapper i upiti
 |   +-- models.py        # Perzistentne klase
+|   +-- renderer.py      # Vizualno iscrtavanje igre
+|   +-- sprite_loader.py # Ucitavanje spritesheet animacija
 |   +-- menu.py          # Menu sustav i navigacija
 |   +-- ui.py            # UI komponente
 |   +-- config.py        # Konstante i konfiguracija
+|   +-- spritesheet/     # Spritesheet slike za animacije
 +-- data/
 |   +-- game.fs          # ZODB file storage
 +-- requirements.txt     # Python dependencies
@@ -699,9 +679,7 @@ for dx in range(-1, 2):
         # ... collision check
 \end{lstlisting}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Primjeri Korištenja}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Instalacija i Pokretanje}
 
@@ -709,7 +687,7 @@ Aplikacija dolazi s instalacijskom skriptom \texttt{setup.py} koja instalira pot
 
 \textbf{Instalacija (Windows):}
 \begin{verbatim}
-git clone https://github.com/yourusername/Projekt_ZODB_Igra.git
+git clone https://github.com/lkukec22/Projekt_ZODB_Igra.git
 cd Projekt_ZODB_Igra
 install.bat
 \end{verbatim}
@@ -797,9 +775,7 @@ python reset_db.py
 
 \textbf{Upozorenje:} Ovo briše sve perzistentne podatke!
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Zaključak}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Procjena Tehnologije}
 
