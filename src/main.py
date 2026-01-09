@@ -91,6 +91,9 @@ class GameApp:
 
     def handle_countdown(self, events):
         self.renderer.draw_background(get_background())
+        if not self.player:
+            self.state = "MENU"
+            return
         time_str = self.format_time(self.player.time_survived)
         self.renderer.draw_game_world(
             self.bullets, self.enemies, self.dropped_items,
@@ -108,6 +111,9 @@ class GameApp:
         self.renderer.draw_countdown_overlay(self.countdown_val)
 
     def handle_game(self, events):
+        if not self.player:
+            self.state = "MENU"
+            return
         dt = self.clock.get_time() / 1000.0
         self.renderer.draw_background(get_background())
         

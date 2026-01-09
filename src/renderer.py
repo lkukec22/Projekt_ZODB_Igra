@@ -73,7 +73,7 @@ class GameRenderer:
         self.screen.blit(self.font.render(diff_text, True, RED), (WIDTH - 220, 20))
         
         controls_text = "WASD: Move | MOUSE: Shoot | ESC: Menu"
-        controls_surf = self.controls_font.render(controls_text, True, (200, 200, 200))
+        controls_surf = self.controls_font.render(controls_text, True, WHITE)
         self.screen.blit(controls_surf, (WIDTH - controls_surf.get_width() - 20, HEIGHT - 30))
     
     def draw_game_world(self, bullets, enemies, dropped_items, player, player_sprite, time_str):
