@@ -1,6 +1,6 @@
 @echo off
 
-echo === Instalacija ZODB RPG Projekta ===
+echo === Instalacija ZODB Top Down Survival Shooter Projekta ===
 
 REM 1. Virtualna okruženja
 echo Kreiram virtualnu okruženja...

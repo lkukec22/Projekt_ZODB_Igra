@@ -1,5 +1,2 @@
-ZODB==6.0
-pygame==2.6.1
-persistent==6.1
-BTrees==6.1
-transaction==5.0
+pygame
+ZODB
