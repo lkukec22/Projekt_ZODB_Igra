@@ -1,12 +1,13 @@
 import pygame
 import math
 import os
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SPRITESHEET_DIR = os.path.join(BASE_DIR, 'spritesheet')
 
 
 class SpriteSheet:
-    _cache = {} 
+    _cache = {}
     
     def __init__(self, filename, columns, rows):
         self.filename = filename
@@ -19,13 +20,10 @@ class SpriteSheet:
     def load(self):
         if self.sheet is not None:
             return
-        
         path = os.path.join(SPRITESHEET_DIR, self.filename)
         self.sheet = pygame.image.load(path).convert_alpha()
-        
         self.cell_width = self.sheet.get_width() // self.columns
         self.cell_height = self.sheet.get_height() // self.rows
-        
         print(f"[Sprite] {self.filename}: {self.cell_width}x{self.cell_height} ćelija")
     
     def get_sprite(self, col, row, scale=1.0):
@@ -49,23 +47,31 @@ class SpriteSheet:
         return [self.get_sprite(start_col + i, row, scale) for i in range(count)]
 
 
-
-# Mravi: 12 stupaca, 8 redova (koristimo samo red 0 s rotacijom)
 ant_sheet = SpriteSheet('Ants.png', 12, 8)
-
-# Mage: 24 stupca, 8 redova
 mage_sheet = SpriteSheet('Mage-Cyan.png', 24, 8)
+background_image = None
 
 
-def init_sprites():
+def init_sprites(screen_width=1024, screen_height=768):
+    global background_image
     ant_sheet.load()
     mage_sheet.load()
+    
+    bg_path = os.path.join(SPRITESHEET_DIR, 'bg.jpg')
+    if os.path.exists(bg_path):
+        background_image = pygame.image.load(bg_path).convert()
+        background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
+        print(f"[Sprite] Učitan background: {screen_width}x{screen_height}")
 
-#ant
+
+def get_background():
+    return background_image
+
+
 ANT_COLORS = {'brown': 0, 'red': 3, 'green': 6, 'black': 9}
 
+
 class AnimatedAntSprite:
-    
     def __init__(self, color='red', scale=1.0):
         self.color = color
         self.scale = scale
@@ -75,7 +81,6 @@ class AnimatedAntSprite:
         self.rotation_angle = 0
         self.is_dead = False
         
-        # Učitaj 3 frejma iz reda 0 za odabranu boju
         start_col = ANT_COLORS.get(color, 0)
         self._frames = ant_sheet.get_frames(start_col, 0, 3, scale)
         self._rotated_cache = {}
@@ -93,7 +98,6 @@ class AnimatedAntSprite:
     def update(self, dt, dx=0, dy=0):
         if self.is_dead:
             return
-        
         if dx != 0 or dy != 0:
             angle = math.degrees(math.atan2(dy, dx))
             self.rotation_angle = -angle - 90 + 180
@@ -104,18 +108,16 @@ class AnimatedAntSprite:
             self.current_frame = (self.current_frame + 1) % 3
     
     def get_current_frame(self):
-        """Dohvati trenutni frejm."""
         if self.is_dead:
             return self._get_rotated(0, 90)
         return self._get_rotated(self.current_frame, self.rotation_angle)
 
 
-#mage
 MAGE_DIRECTIONS = {'down': 0, 'right': 2, 'up': 4, 'left': 6}
 MAGE_ACTIONS = {'walk': (0, 4), 'magic': (12, 4)}
 
+
 class AnimatedMageSprite:
-    
     def __init__(self, scale=3.0):
         self.scale = scale
         self.current_frame = 0
@@ -126,7 +128,6 @@ class AnimatedMageSprite:
         self.is_attacking = False
         self.attack_timer = 0
         
-        # Preload animacija
         self._animations = {}
         for action, (start_col, count) in MAGE_ACTIONS.items():
             self._animations[action] = {}

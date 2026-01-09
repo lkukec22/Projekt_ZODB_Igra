@@ -1,12 +1,13 @@
 import pygame
 import random
 import math
-import sys
 from database import GameDB
 from models import Player, Item, Enemy, Bullet
 from config import *
 from menu import Menu
-from sprite_loader import init_sprites, AnimatedMageSprite
+from sprite_loader import init_sprites, AnimatedMageSprite, get_background
+from renderer import GameRenderer
+
 
 class GameApp:
     def __init__(self):
@@ -15,11 +16,11 @@ class GameApp:
         pygame.display.set_caption("Top Down Survival Shooter")
         self.clock = pygame.time.Clock()
         
-        init_sprites()
+        init_sprites(WIDTH, HEIGHT)
         
-        self.font = pygame.font.Font(None, 36)
-        self.title_font = pygame.font.Font(None, 74)
-        self.countdown_font = pygame.font.Font(None, 300)
+        self.renderer = GameRenderer(self.screen)
+        self.font = self.renderer.font
+        self.title_font = self.renderer.title_font
         
         self.db = GameDB()
         self.state = "MENU"
@@ -34,7 +35,6 @@ class GameApp:
         self.dropped_items = []
         self.spawn_timer = 0
         
-        # Sprite za igrača (mage)
         self.player_sprite = AnimatedMageSprite(scale=4.0)
         self.last_shot = False
         self.player_dx = 0
@@ -89,41 +89,13 @@ class GameApp:
         secs = int(seconds) % 60
         return f"{mins:02}:{secs:02}"
 
-    def draw_game_world(self):
-        for b in self.bullets: b.draw(self.screen)
-        for e in self.enemies: e.draw(self.screen)
-        for it in self.dropped_items:
-            pygame.draw.rect(self.screen, YELLOW, (it.x, it.y, 15, 15))
-
-        if self.player.status == "Active":
-            player_frame = self.player_sprite.get_current_frame()
-            frame_rect = player_frame.get_rect(center=(self.player.x + 20, self.player.y + 20))
-            self.screen.blit(player_frame, frame_rect)
-        else:
-            pygame.draw.rect(self.screen, GRAY, (self.player.x, self.player.y, 40, 40))
-
-        time_str = self.format_time(self.player.time_survived)
-        name_surf = self.font.render(f"Player: {self.player.name}", True, CYAN)
-        self.screen.blit(name_surf, (20, 20))
-        
-        ui_text = f"HP: {self.player.hp} | Score: {self.player.score} | Time: {time_str} | Multi: x{self.player.multiplier:.1f}"
-        self.screen.blit(self.font.render(ui_text, True, WHITE), (20, 50))
-        
-        diff_text = f"Difficulty: {1.0 + (self.player.time_survived/60.0):.1f}x"
-        self.screen.blit(self.font.render(diff_text, True, RED), (WIDTH - 220, 20))
-
-        controls_text = "WASD: Move | MOUSE: Shoot | ESC: Menu"
-        controls_surf = pygame.font.Font(None, 24).render(controls_text, True, (200, 200, 200))
-        self.screen.blit(controls_surf, (WIDTH - controls_surf.get_width() - 20, HEIGHT - 30))
-
     def handle_countdown(self, events):
-        self.screen.fill(GRAY)
-        self.draw_game_world()
-        
-        overlay = pygame.Surface((WIDTH, HEIGHT))
-        overlay.set_alpha(128)
-        overlay.fill(BLACK)
-        self.screen.blit(overlay, (0,0))
+        self.renderer.draw_background(get_background())
+        time_str = self.format_time(self.player.time_survived)
+        self.renderer.draw_game_world(
+            self.bullets, self.enemies, self.dropped_items,
+            self.player, self.player_sprite, time_str
+        )
         
         now = pygame.time.get_ticks()
         if now - self.last_count_tick >= 1000:
@@ -132,15 +104,12 @@ class GameApp:
             if self.countdown_val <= 0:
                 self.state = "GAME"
                 return
-
-        count_text = str(self.countdown_val)
-        count_surf = self.countdown_font.render(count_text, True, YELLOW)
-        rect = count_surf.get_rect(center=(WIDTH//2, HEIGHT//2))
-        self.screen.blit(count_surf, rect)
+        
+        self.renderer.draw_countdown_overlay(self.countdown_val)
 
     def handle_game(self, events):
         dt = self.clock.get_time() / 1000.0
-        self.screen.fill(GRAY)
+        self.renderer.draw_background(get_background())
         
         for event in events:
             if event.type == pygame.KEYDOWN:
@@ -208,9 +177,7 @@ class GameApp:
                         for e in cell_enemies:
                             if math.hypot(b.x - e.x, b.y - e.y) < 20:
                                 if random.random() < 0.4:
-                                    item_type = 'score'
-                                    val = 50
-                                    new_item = Item(f"Drop_{item_type}", item_type, val)
+                                    new_item = Item("Drop_score", 'score', 50)
                                     new_item.x, new_item.y = e.x, e.y
                                     self.dropped_items.append(new_item)
                                 
@@ -241,17 +208,15 @@ class GameApp:
                     self.player.use_item(it)
                     self.dropped_items.remove(it)
 
-        self.draw_game_world()
+        time_str = self.format_time(self.player.time_survived)
+        self.renderer.draw_game_world(
+            self.bullets, self.enemies, self.dropped_items,
+            self.player, self.player_sprite, time_str
+        )
 
     def handle_gameover(self, events):
-        self.screen.fill((50, 0, 0))
-        msg = self.title_font.render("GAME OVER", True, RED)
-        self.screen.blit(msg, (WIDTH//2 - msg.get_width()//2, HEIGHT//2 - 120))
-        stats = f"Score: {self.player.score} | Time: {self.format_time(self.player.time_survived)}"
-        score_msg = self.font.render(stats, True, WHITE)
-        self.screen.blit(score_msg, (WIDTH//2 - score_msg.get_width()//2, HEIGHT//2 - 40))
-        restart_msg = self.font.render("Press R to Restart or ESC for Menu", True, (200, 200, 200))
-        self.screen.blit(restart_msg, (WIDTH//2 - restart_msg.get_width()//2, HEIGHT//2 + 40))
+        time_str = self.format_time(self.player.time_survived)
+        self.renderer.draw_gameover(self.player, time_str)
 
         for event in events:
             if event.type == pygame.KEYDOWN:
@@ -292,6 +257,7 @@ class GameApp:
         self.db.pack()
         self.db.close()
         pygame.quit()
+
 
 if __name__ == "__main__":
     app = GameApp()

@@ -6,6 +6,7 @@ from persistent.list import PersistentList
 from config import WIDTH, HEIGHT
 from sprite_loader import AnimatedAntSprite
 
+
 class Bullet:
     def __init__(self, x, y, target_x, target_y):
         self.x, self.y = x, y
@@ -13,13 +14,33 @@ class Bullet:
         angle = math.atan2(target_y - y, target_x - x)
         self.dx = math.cos(angle) * self.speed
         self.dy = math.sin(angle) * self.speed
+        self.angle = angle
+        self.trail = []
 
     def move(self):
+        self.trail.append((self.x, self.y))
+        if len(self.trail) > 5:
+            self.trail.pop(0)
         self.x += self.dx
         self.y += self.dy
 
     def draw(self, screen):
-        pygame.draw.circle(screen, (255, 255, 0), (int(self.x), int(self.y)), 5)
+        for i, (tx, ty) in enumerate(self.trail):
+            alpha = int(50 + i * 30)
+            size = 2 + i
+            trail_color = (255, 100 + i * 20, 0)
+            trail_surface = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
+            pygame.draw.circle(trail_surface, (*trail_color, alpha), (size, size), size)
+            screen.blit(trail_surface, (int(tx) - size, int(ty) - size))
+        
+        glow_surface = pygame.Surface((32, 32), pygame.SRCALPHA)
+        pygame.draw.circle(glow_surface, (255, 80, 0, 60), (16, 16), 14)
+        pygame.draw.circle(glow_surface, (255, 120, 0, 80), (16, 16), 10)
+        screen.blit(glow_surface, (int(self.x) - 16, int(self.y) - 16))
+        
+        pygame.draw.circle(screen, (255, 140, 0), (int(self.x), int(self.y)), 7)
+        pygame.draw.circle(screen, (255, 200, 50), (int(self.x), int(self.y)), 5)
+        pygame.draw.circle(screen, (255, 255, 200), (int(self.x), int(self.y)), 3)
 
 
 class Enemy:
