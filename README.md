@@ -43,7 +43,7 @@ python src/main.py
 - **Pucanje**: **Lijevi klik miša** (ciljanje mišem).
 - **Pauza / Izbornik**: Tipka **ESC** (automatski radi `commit` transakcije).
 - **Restart**: Tipka **R** nakon poraza.
-- **Cilj**: Preživite što duže protiv hordi neprijatelja (crveni krugovi) i skupljajte predmete (žuti kvadrati) za HP i bodove.
+- **Cilj**: Preživite što duže protiv hordi neprijatelja (mravinjak sprites) i skupljajte predmete (žuti kvadrati) za HP i bodove.
 - **Napredak Težine**: Što duže igrate, brže se pojavljuju jači neprijatelji. Težina se izračunava kao `1.0 + (vrijeme_preživljavanja / 60s)`.
 
 ## Resetiranje stanja
@@ -57,9 +57,12 @@ Ovo će obrisati mapu `data/` i sve spremljene igrače te rezultate.
 - `src/main.py`: Glavna petlja igre (Game Loop), upravljanje stanjima (MENU, GAME, COUNTDOWN, GAMEOVER, LEADERBOARD, LOAD_GAME) i PyGame logika.
 - `src/models.py`: Definicije perzistentnih objekata (`Player`, `Enemy`, `Bullet`, `Item`) s ugrađenom poslovnom logikom.
 - `src/database.py`: `GameDB` klasa - upravljanje ZODB vezom, transakcijama, BTree upitima i high score tablicama.
+- `src/renderer.py`: Modul za vizualno iscrtavanje igre (renderiranje igrača, neprijatelja, metaka, UI elemenata).
+- `src/sprite_loader.py`: Učitavanje i upravljanje spritesheet animacijama za neprijatelje (mrave).
 - `src/menu.py`: Logika izbornika - New Game, Load Game, Leaderboard, Exit.
 - `src/ui.py`: UI komponente (Button, TextField) za interaktivne elemente.
 - `src/config.py`: Globalne konstante (WIDTH, HEIGHT, FPS, boje).
+- `src/spritesheet/`: Mapa sa spritesheet slikama za animacije neprijatelja.
 - `data/`: Mapa u kojoj se pohranjuju datoteke baze podataka (`game.fs`, `game.fs.index`).
 - `dokument/Rad.tex`: Detaljna projektna dokumentacija u LaTeX-u s UML dijagramima i teorijskim okvirom.
 
