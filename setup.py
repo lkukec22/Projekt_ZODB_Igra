@@ -3,17 +3,26 @@ import subprocess
 import sys
 
 def setup():
-    print("--- Pokretanje instalacije projekta ---")
+
+    # 1. Instalacija paketa iz requirements.txt
+    print("\n[1/3] Instaliram potrebne pakete...")
+    requirements_path = os.path.join(os.path.dirname(__file__), 'requirements.txt')
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", requirements_path])
     
-    # 1. Instalacija paketa
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "zodb", "pygame", "persistent"])
+    # 2. Kreiranje data direktorija
+    print("\n[2/3] Pripremam direktorij za bazu podataka...")
+    data_dir = os.path.join(os.path.dirname(__file__), 'data')
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
+        print("  -> Kreiran direktorij 'data/'")
+    else:
+        print("  -> Direktorij 'data/' već postoji")
     
-    # 2. Kreiranje baze podataka
-    if not os.path.exists('data'):
-        os.makedirs('data')
-        print("Kreiran direktorij za bazu podataka.")
+    print("\n[3/3] Pokrećem igru...")
     
-    print("\nInstalacija uspješna. Pokrenite igru sa: python src/main.py")
+    # 3. Pokretanje igre
+    main_path = os.path.join(os.path.dirname(__file__), 'src', 'main.py')
+    subprocess.call([sys.executable, main_path])
 
 if __name__ == "__main__":
     setup()

@@ -21,17 +21,15 @@ Jednostavna Top Down Survival Shooter igra razvijena sa **ZODB (Zope Object Data
 ## Instalacija
 
 ### Automatski (preporučeno)
-Pokrenite instalacijsku skriptu koja će postaviti virtualno okruženje i instalirati zavisnosti:
+Pokrenite setup skriptu koja će instalirati zavisnosti i pokrenuti igru:
 ```bash
 python setup.py
 ```
-Ili koristite specifične skripte za vaš OS:
-- **Windows**: `install.bat`
-- **Linux/Mac**: `install.sh`
 
 ### Ručno
 ```bash
 pip install -r requirements.txt
+python src/main.py
 ```
 
 ## Kako igrati
