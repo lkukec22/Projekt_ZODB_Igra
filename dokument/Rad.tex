@@ -310,19 +310,21 @@ Objektno-orijentirane baze podataka (\ac{OOBP}) su sustavi za upravljanje bazama
     \end{tabular}
 \end{table}
 
+
 \chapter{Model Baze Podataka}
 
-\section{UML dijagram klasa -- Model baze podataka}
+\section{UML dijagram klasa - Model baze podataka}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{slike/uml_model_baze.png}
-    \caption{UML dijagram klasa -- Model baze podataka}
+    \includegraphics[width=0.6\textwidth]{slike/uml_model_baze.png}
+    \caption{UML dijagram klasa - Model baze podataka}
     \label{fig:uml_model_baze}
 \end{figure}
 
 Dijagram prikazuje strukturu ZODB baze podataka. Korijenski objekt \texttt{ZODBRoot} sadrži tri kolekcije: \texttt{players} za spremanje igrača, \texttt{high\_scores} (OOBTree) za ljestvicu rezultata, te \texttt{world\_state} za globalno stanje igre. Klasa \texttt{Player} označena je stereotipom \texttt{<<Persistent>>} jer naslijeđuje ZODB-ovu baznu klasu za perzistenciju. Player agregira liste objekata \texttt{Enemy}, \texttt{Bullet} i \texttt{Item} koje se spremaju kao snapshot prilikom pauziranja igre. Klasa \texttt{GameDB} služi kao wrapper za ZODB operacije.
 
+\newpage
 \textbf{Legenda:}
 \begin{itemize}
     \item \texttt{<<Persistent>>} -- ZODB perzistentna klasa
@@ -335,7 +337,7 @@ Dijagram prikazuje strukturu ZODB baze podataka. Korijenski objekt \texttt{ZODBR
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{slike/uml_aplikacija.png}
-    \caption{UML dijagram klasa -- Aplikacija}
+    \caption{UML dijagram klasa - Aplikacija}
     \label{fig:uml_aplikacija}
 \end{figure}
 

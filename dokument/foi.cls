@@ -8,7 +8,7 @@
 
 
 \ProcessOptions
-\LoadClass[11pt, onecolumn]{report}
+\LoadClass[11pt, onecolumn, openany]{report}
 \RequirePackage[a4paper, left=2.5cm, right=2.5cm, bottom=2.5cm, top=2.5cm]{geometry}
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[\jezik]{babel}
