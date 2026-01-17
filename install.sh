@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "=== Instalacija ZODB RPG Projekta ==="
+echo "=== Instalacija ZODB Top Down Survival Shooter Projekta ==="
 
 # 1. Virtualna okruženja
 echo "Kreiram virtualnu okruženja..."
@@ -15,7 +15,7 @@ echo "Instaliram pakete..."
 pip install -r requirements.txt
 
 echo ""
-echo "✓ Instalacija je uspješna!"
+echo "Instalacija je uspješna!"
 echo ""
 echo "Za pokretanje igre, izvršite:"
 echo "  source venv/bin/activate"
