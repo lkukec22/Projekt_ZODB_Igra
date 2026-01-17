@@ -16,7 +16,7 @@ class Menu:
 
     def handle_main(self, events):
         self.game.screen.fill(DARK_GRAY)
-        title = self.game.title_font.render("ZODB Survival Shooter", True, WHITE)
+        title = self.game.title_font.render("Survival Shooter", True, WHITE)
         self.game.screen.blit(title, (WIDTH//2 - title.get_width()//2, 100))
         
         info = self.game.font.render("Enter name for New Game:", True, WHITE)
@@ -83,20 +83,50 @@ class Menu:
 
     def handle_leaderboard(self, events):
         self.game.screen.fill(BLACK)
-        title = self.game.title_font.render("Leaderboard (ZODB)", True, YELLOW)
+        title = self.game.title_font.render("Leaderboard", True, YELLOW)
         self.game.screen.blit(title, (WIDTH//2 - title.get_width()//2, 50))
         
-        header = self.game.font.render("Rank   Name         Score    Time", True, (200, 200, 200))
-        self.game.screen.blit(header, (WIDTH//2 - 250, 120))
+        # Define column x positions
+        col_rank_x = WIDTH//2 - 200
+        col_name_x = WIDTH//2 - 100
+        col_score_x = WIDTH//2 + 50
+        col_time_x = WIDTH//2 + 180
+
+        # Draw Headers
+        h_rank = self.game.font.render("Rank", True, (200, 200, 200))
+        self.game.screen.blit(h_rank, (col_rank_x, 120))
+        
+        h_name = self.game.font.render("Name", True, (200, 200, 200))
+        self.game.screen.blit(h_name, (col_name_x, 120))
+        
+        h_score = self.game.font.render("Score", True, (200, 200, 200))
+        self.game.screen.blit(h_score, (col_score_x, 120))
+        
+        h_time = self.game.font.render("Time", True, (200, 200, 200))
+        self.game.screen.blit(h_time, (col_time_x, 120))
+
         pygame.draw.line(self.game.screen, WHITE, (WIDTH//2 - 260, 150), (WIDTH//2 + 260, 150), 2)
 
         top_scores = self.game.db.get_top_scores(10)
         start_y = 170
         for i, (name, score, time_val) in enumerate(top_scores):
             time_str = self.game.format_time(time_val)
-            text_str = f"{i+1:<5}  {name:<12} {score:<8} {time_str}"
-            text = self.game.font.render(text_str, True, WHITE)
-            self.game.screen.blit(text, (WIDTH//2 - 250, start_y + i * 40))
+            
+            # Rank
+            t_rank = self.game.font.render(f"{i+1}", True, WHITE)
+            self.game.screen.blit(t_rank, (col_rank_x + 10, start_y + i * 40))
+            
+            # Name
+            t_name = self.game.font.render(str(name), True, WHITE)
+            self.game.screen.blit(t_name, (col_name_x, start_y + i * 40))
+            
+            # Score
+            t_score = self.game.font.render(str(score), True, WHITE)
+            self.game.screen.blit(t_score, (col_score_x, start_y + i * 40))
+            
+            # Time
+            t_time = self.game.font.render(time_str, True, WHITE)
+            self.game.screen.blit(t_time, (col_time_x, start_y + i * 40))
 
         for event in events:
             if self.btn_back.is_clicked(event):
